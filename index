@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منظومة طلبة الدراسات العليا</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===== Variables ===== */
+:root {
+  --primary: #00695C;
+  --primary-dark: #004D40;
+  --primary-light: #80CBC4;
+  --accent: #FFB300;
+  --accent-light: #FFF8E1;
+  --surface: #ffffff;
+  --surface-alt: #F5FAFA;
+  --border: #E0EFED;
+  --text-main: #1A2E2B;
+  --text-sub: #5C7A76;
+  --text-muted: #9BB5B0;
+  --danger: #E53935;
+  --success: #43A047;
+  --warning-bg: #FFFDE7;
+  --warning-border: #FFD600;
+  --warning-text: #7A5F00;
+  --shadow-sm: 0 2px 8px rgba(0,77,64,.07);
+  --shadow-md: 0 6px 24px rgba(0,77,64,.10);
+  --shadow-lg: 0 16px 48px rgba(0,77,64,.13);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-pill: 50px;
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Cairo', 'Tajawal', Tahoma, sans-serif;
+  background: #EDF5F4;
+  color: var(--text-main);
+  direction: rtl;
+  min-height: 100vh;
+}
+
+/* ===== Header ===== */
+header {
+  background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary) 60%, #00897B 100%);
+  color: #fff;
+  padding: 0 32px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-icon {
+  width: 42px;
+  height: 42px;
+  background: rgba(255,255,255,.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.header-sub {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: .75;
+  margin-top: 1px;
+}
+
+header .spacer { flex: 1; }
+
+.header-badge {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: var(--radius-pill);
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== Edit Notice ===== */
+#editNotice {
+  display: none;
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 700;
+  border-bottom: 2px solid var(--warning-border);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+#editNotice .notice-dot {
+  width: 8px; height: 8px;
+  background: var(--warning-border);
+  border-radius: 50%;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: .6; }
+}
+
+/* ===== Search Bar ===== */
+.search-wrapper {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.search-field {
+  position: relative;
+  flex: 1;
+  max-width: 460px;
+}
+
+.search-field svg {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-field input {
+  width: 100%;
+  padding: 11px 42px 11px 16px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  color: var(--text-main);
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  transition: all .2s;
+  direction: rtl;
+}
+
+.search-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0,105,92,.1);
+}
+
+.search-field input::placeholder { color: var(--text-muted); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0,105,92,.30);
+}
+
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,105,92,.35); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success) 0%, #2E7D32 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(67,160,71,.25);
+}
+
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text-sub);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ===== Autocomplete ===== */
+#suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  z-index: 500;
+  overflow: hidden;
+}
+
+.suggest-item {
+  padding: 11px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggest-item::before {
+  content: '👤';
+  font-size: 13px;
+  opacity: .6;
+}
+
+.suggest-item:last-child { border-bottom: none; }
+.suggest-item:hover { background: var(--surface-alt); }
+
+.match {
+  background: #FFE082;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+/* ===== Tabs ===== */
+.tabs-container {
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs-container::-webkit-scrollbar { display: none; }
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: 10px 0 0;
+  min-width: max-content;
+}
+
+.tabs button {
+  border: none;
+  padding: 9px 18px 11px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: transparent;
+  color: var(--text-sub);
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all .2s;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  position: relative;
+  bottom: -2px;
+}
+
+.tabs button:hover { color: var(--primary); background: var(--surface-alt); }
+
+.tabs button.active {
+  color: var(--primary-dark);
+  background: var(--surface);
+  border-bottom: 2px solid var(--primary);
+  font-weight: 700;
+}
+
+/* Tab number badge */
+.tabs button .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: var(--border);
+  color: var(--text-sub);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 5px;
+}
+.tabs button.active .tab-count {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* ===== Sections ===== */
+.section { display: none; padding: 24px 28px; }
+.section.active { display: block; animation: fadeIn .2s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.section-header h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.section-header .section-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface-alt);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
+
+/* ===== Form Grid ===== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 14px;
+}
+
+/* ===== Field Card ===== */
+.field {
+  background: var(--surface);
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.field:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,105,92,.08);
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+  letter-spacing: .2px;
+}
+
+.field input {
+  width: 100%;
+  padding: 8px 0;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  color: var(--text-main);
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  background: transparent;
+  transition: border-color .2s;
+  direction: rtl;
+}
+
+.field input:focus {
+  outline: none;
+  border-bottom-color: var(--primary);
+}
+
+.field input::placeholder { color: var(--text-muted); font-size: 13px; }
+
+.field input[readonly] {
+  color: var(--primary-dark);
+  font-weight: 700;
+  cursor: default;
+}
+
+/* ===== Actions Bar ===== */
+.actions-bar {
+  background: var(--surface);
+  border-top: 2px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  position: sticky;
+  bottom: 0;
+  z-index: 90;
+  box-shadow: 0 -4px 20px rgba(0,77,64,.07);
+}
+
+/* ===== Toast Notification ===== */
+#toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text-main);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s;
+  white-space: nowrap;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#toast.success { background: var(--success); }
+#toast.error   { background: var(--danger); }
+
+/* ===== Export Button ===== */
+.btn-export {
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(21,101,192,.30);
+}
+.btn-export:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(21,101,192,.4); }
+
+/* ===== Confirm Modal ===== */
+#confirmModal {
+  position: fixed; inset: 0; z-index: 9000;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(3px);
+}
+.modal-box {
+  position: relative;
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 40px;
+  text-align: center;
+  width: 400px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.18);
+  animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn {
+  from { transform: scale(.85); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.modal-icon { font-size: 48px; margin-bottom: 12px; }
+.modal-title { font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; }
+.modal-msg { font-size: 14px; color: var(--text-sub); line-height: 1.8; margin-bottom: 24px; }
+.modal-msg strong { color: var(--text-main); font-size: 15px; display: block; margin-top: 4px; }
+.modal-actions { display: flex; gap: 10px; justify-content: center; }
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  header { padding: 0 16px; }
+  .header-badge { display: none; }
+  .search-wrapper { padding: 14px 16px; flex-wrap: wrap; }
+  .section { padding: 16px 14px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .actions-bar { padding: 14px 16px; flex-wrap: wrap; }
+  .modal-box { width: 90vw; padding: 24px 20px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+  <div class="header-icon">🎓</div>
+  <div>
+    <div class="header-title">منظومة طلبة الدراسات العليا</div>
+    <div class="header-sub">كلية التخطيط العمراني</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="header-badge">🏛️ جامعة الكوفة</div>
+</header>
+
+<!-- ===== Edit Notice ===== -->
+<div id="editNotice">
+  <div class="notice-dot"></div>
+  ⚠️ أنت الآن في وضع تعديل بيانات الطالب — يرجى مراجعة البيانات قبل الحفظ
+</div>
+
+<!-- ===== Search ===== -->
+<div class="search-wrapper">
+  <div class="search-field">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input id="searchBox"
+           placeholder="ابحث برقم الطالب أو الاسم الرباعي..."
+           oninput="suggestNames()">
+    <div id="suggestions"></div>
+  </div>
+  <button class="btn btn-primary" onclick="searchStudent()">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+    بحث
+  </button>
+</div>
+
+<!-- ===== Tabs ===== -->
+<div class="tabs-container">
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<!-- ===== Sections ===== -->
+<div id="sections"></div>
+
+<!-- ===== Actions Bar ===== -->
+<div class="actions-bar">
+  <button id="addBtn" class="btn btn-primary" onclick="addStudent()">
+    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path d="M12 5v14M5 12h14"/>
+    </svg>
+    إضافة طالب جديد
+  </button>
+  <button id="updateBtn" class="btn btn-success" onclick="saveUpdate()" style="display:none">
+    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path d="M5 13l4 4L19 7"/>
+    </svg>
+    حفظ التعديلات
+  </button>
+  <button id="cancelBtn" class="btn btn-ghost" onclick="location.reload()" style="display:none">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+    إلغاء
+  </button>
+  <button id="exportBtn" class="btn btn-export" onclick="confirmExport()" style="display:none">
+    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path d="M12 16l-4-4h3V4h2v8h3l-4 4z"/><path d="M4 20h16"/>
+    </svg>
+    تصدير سيرة دراسية
+  </button>
+</div>
+
+<!-- Modal -->
+<div id="confirmModal" style="display:none">
+  <div class="modal-overlay" onclick="closeExportModal()"></div>
+  <div class="modal-box">
+    <div class="modal-icon">📄</div>
+    <h3 class="modal-title">تصدير السيرة الدراسية</h3>
+    <p class="modal-msg">هل تريد تصدير السيرة الدراسية للطالب<br><strong id="modalStudentName"></strong> ؟</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="doExportPDF()">نعم، تصدير</button>
+      <button class="btn btn-ghost" onclick="closeExportModal()">لا، إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyA3QXJjdbivmIRl3HhZhods2J66G_OaLQ5Pcbvl7UUyFJOoltIglkycKgJpS6ge6LS/exec";
+
+let MODE = "ADD";
+let currentRowIndex = null;
+
+const ALL_COLUMNS = [
+"رقم الطالب","المف الورقي","الاسم الرباعي واللقب","الجنس","تاريخ الميلاد",
+"سنة القبول","قناة القبول","الجامعة المقبول فيها","الكلية المقبول فيها","القسم المقبول فيه",
+"رقم الامر الجامعي بالقبول","تاريخ الامر الجامعي بالقبول","التسلسل في الامر الجامعي",
+"نوع القبول","نوع الدراسة","اصل الدراسة","رقم الموبايل","البريد الالكتروني",
+"رقم وثيقة البكالوريوس","تاريخ وثيقة البكالوريوس","معدل البكلوريوس",
+"سنة التخرج لشهادة البكالوريوس","الجامعة التي تخرج منها للبكالوريوس",
+"الكلية التي تخرج منها للبكالوريوس","القسم التي تخرج منه للبكالوريوس",
+"رقم وثيقة الدبلوم العالي","تاريخ وثيقة الدبلوم العالي","معدل الدبلوم العالي",
+"سنة التخرج لشهادة الدبلوم العال","الجامعة التي تخرج منها",
+"الكلية التي تخرج منها للدبلوم العلي","القسم التي تخرج منه للدبلوم العلي",
+"رقم وثيقة الماجستير","تاريخ وثيقة الماجستير","معدل الماجستير",
+"سنة التخرج لشهادة الماجستير","الجامعة التي تخرج منها الماجستير",
+"الكلية التي تخرج منها الماجستير","القسم التي تخرج منه الماجستير",
+"كفاءة الحاسوب","كفاءة اللغة الإنكليزية","كفاءة اللغة العربية",
+"المعدل النسبي","درجة الامتحان التنافسي","معدل اساس المفاضلة",
+"التخصص العام للطالب","التخصص الدقيق للطالب",
+"رقم الامر الجامعي بالغاء القبول","تاريخ الامر الجامعي بالغاء القبول","سبب الغاء القبول",
+"رقم الامر الاداري بالمباشرة بالدراسة","تاريخ الامر الاداري بالمباشرة بالدراسة",
+"تاريخ المباشرة الفعلية","تاريخ انتهاء المدة","تاريخ انتهاء مدة الدراسة",
+"جهة انتساب الموظف (الوزارة - والدائرة)","رقم كتاب عدم الممانعة",
+"تاريخ كتاب عدم الممانعة","جهة عدم الممانعة","موظف في جامعة الكوفة",
+"رقم الامر الجامعي للتفرغ الكلي","تاريخ الامر الجامعي للتفرغ الكلي",
+"رقم كتاب الاجازة الدراسية","تاريخ كتاب الاجازة الدراسية",
+"رقم الامر الخاص بانفكاك الموظف من وظيفته ",
+"تاريخ الامر الخاص بانفكاك الموظف من وظيفته ",
+"رقم الامر الجامعي بالتفرغ الجزئي","تاريخ الامر الجامعي بالتفرغ الجزئي",
+"رقم تمديد الاجازة الدراسية","تاريخ تمديد الاجازة الدراسية",
+"رقم الامر الجامعي بالتاجيل الأول","تاريخ الامر الجامعي بالتاجيل الأول","سبب التاجيل الأول",
+"رقم الامر الجامعي بالتاجيل الثاني","تاريخ الامر الجامعي بالتاجيل الثاني","سبب التاجيل الثاني ",
+"الجهة المنقول منها","الجهة المنقول اليها","رقم الامر الجامعي بالنقل","تاريخ الامر الجامعي بالنقل",
+"رقم الامر الخاص بالانفكاك","تأريخ الامر الخاص بالانفكاك",
+"رقم الامر الخاص بالمباشرة بعد النقل","تأريخ الامر الخاص بالمباشرة بعد النقل",
+"رقم الامر الجامعي بالنقل1","تاريخ الامر الجامعي بالنقل1",
+"رقم صحة صدور وثيقة البكالوريوس","تاريخ صحة صدور وثيقة البكالوريوس",
+"رقم صحة صدور وثيقة الالماجستير","تاريخ صحة صدور وثيقة الالماجستير",
+"رقم صحة صدور البطاقة الوطنية او الجنسية","تاريخ صحة صدور البطاقة الوطنية او الجنسية",
+"رقم صحة صدور شهادة الجنسية","تاريخ صحة صدور شهادة الجنسية",
+"رقم صحة صدور استمارة ذوي الشهداء","تاريخ صحة صدور استمارة ذوي الشهداء",
+"رقم صحة صدور استمارة السجناء","تاريخ صحة صدور استمارة السجناء",
+"رقم صحة صدور استمارة ذوي الإعاقة","تاريخ صحة صدور استمارة ذوي الإعاقة",
+"رقم الامر الجامعي بالترقين الأول","تاريخ الامر الجامعي بالترقين الأول",
+"سبب الترقين الأول","مرحلة الترقين الأول",
+"رقم الامر الجامعي بالاعادة للدراسة","تاريخ الامر الجامعي بالاعادة للدراسة",
+"سبب العودة بالترقين الأول",
+"رقم الامر الجامعي بالترقين الثاني","تاريخ الامر الجامعي بالترقين الثاني",
+"سبب الترقين الثاني","مرحلة الترقين الثاني",
+"رقم كتاب الاعادة للدراسة بالترقين الثاني",
+"تاريخ كتاب الاعادة للدراسة  بالترقين الثاني",
+"سبب العودة بالترقين الثاني",
+"رقم كتاب تشكيل لجنة إقرار البحث","تاريخ كتاب تشكيل لجنة إقرار البحث",
+"عنوان الرسالة باللغة العربية","عنوان الرسالة باللغة الإنكليزية",
+"اللقب العلمي للمشرف1","اسم المشرف الأول",
+"التخصص العام للمشرف الأول","التخصص الدقيق للمشرف الاول","مكان العمل للمشرف الاول",
+"رقم الامر الإداري بالمشرف الأول","تاريخ الامر الإداري بالمشرف الأول",
+"اللقب العلمي للمشرف2","اسم المشرف الثاني",
+"التخصص العام للمشرف الثاني","التخصص الدقيق للمشرف الثاني","مكان العمل للمشرف الثاني",
+"رقم الامر الإداري بالمشرف الثاني","تاريخ الامر الإداري بالمشرف الثاني",
+"تمديد اولي","رقم كتاب التمديد الأول","تاريخ كتاب التمديد الأول",
+"تاريخ بداية التمديد الأول","تاريخ نهاية التمديد الأول",
+"تمديد ثاني","رقم كتاب التمديد الثاني","تاريخ كتاب التمديد الثاني",
+"تاريخ بداية التمديد الثاني","تاريخ نهاية التمديد الثاني",
+"تمديد استثنائي اولي","رقم كتاب التمديد استثنائي اولي",
+"تاريخ كتاب التمديد استثنائي اولي",
+"تاريخ بداية التمديد استثنائي اول","تاريخ نهاية التمديد استثنائي اول",
+"تمديد استثنائي ثاني","رقم كتاب التمديد استثنائي ثاني",
+"تاريخ كتاب التمديد استثنائي ثاني",
+"تاريخ بداية التمديد استثنائي ثاني","تاريخ نهاية التمديد استثنائي ثاني",
+"تاريخ تسليم الرسالة او الاطروحة الى القسم العلمي",
+"رقم كتاب تسليم الرسالة او الاطروحة",
+"تاريخ كتاب تسليم الرسالة او الاطروحة",
+"اللقب العلمي-العلمي","اسم المقوم العلمي",
+"الاختصاص العام-العلمي","الاختصاص الدقيق-العلمي","مكان العمل-العلمي",
+"رقم كتاب التقويم العلمي","تاريخ كتاب التقويم العلمي",
+"اللقب العلمي-العلمي2","اسم المقوم العلمي2",
+"الاختصاص العام-العلمي2","الاختصاص الدقيق-العلمي2","مكان العمل-العلمي2",
+"رقم كتاب التقويم العلمي2","تاريخ كتاب التقويم العلمي2",
+"اللقب العلمي-اللغوي","اسم المقوم اللغوي",
+"الاختصاص العام-اللغوي","الاختصاص الدقيق-اللغوي","مكان العمل-اللغوي",
+"رقم كتاب التقويم اللغوي","تاريخ كتاب التقويم اللغوي",
+"رقم محضر تشكيل لجنة المناقشة","تاريخ محضر تشكيل لجنة المناقشة",
+"تاريخ المناقشة","الوقت (كتابتا)","اسم اليوم (كتابتا)","اسم القاعة",
+"رقم الامر الإداري بتشكيل لجنة المناقشة",
+"تاريخ الامر الإداري بتشكيل لجنة المناقشة",
+"اللقب العلمي لجنة1","اسم عضو لجنة المناقشة1","التخصص العام1",
+"التخصص الدقيق1","مكان العمل1","رئيسا",
+"اللقب العلمي لجنة2","اسم عضو لجنة المناقشة2","التخصص العام2",
+"التخصص الدقيق2","مكان العمل2","عضوا2",
+"اللقب العلمي لجنة3","اسم عضو لجنة المناقشة3","التخصص العام3",
+"التخصص الدقيق3","مكان العمل3","عضوا3",
+"اللقب العلمي لجنة4","اسم عضو لجنة المناقشة4","التخصص العام4",
+"التخصص الدقيق4","مكان العمل4","عضوا4",
+"اللقب العلمي لجنة5","اسم عضو لجنة المناقشة5","التخصص العام5",
+"التخصص الدقيق5","مكان العمل5","عضوا5",
+"اللقب العلمي لجنة6","اسم عضو لجنة المناقشة6","التخصص العام6",
+"التخصص الدقيق6","مكان العمل6","عضوا6",
+"اللقب العلمي لجنة7","اسم عضو لجنة المناقشة7","التخصص العام7",
+"التخصص الدقيق7","مكان العمل7","عضوا7",
+"رقم كتاب المصادقة على منح الشهادة","تاريخ كتاب المصادقة على منح الشهادة",
+"درجة الفصل الاول","درجة الفصل الثاني","معدل الدور الاول","معدل الدور الثاني",
+"الدور الذي نجح فيه","معدل الامتحان التكميلي","معدل السنة التحضيرية",
+"درجة المناقشة","معدل الطالب النهائي","تقدير الطالب النهائي",
+"رقم الامر الجامعي بالتخرج","تاريخ الامر الجامعي بالتخرج","سنة التخرج",
+"منظم الاستمارة","مقرر الدراسات العليا","رئيس القسم",
+"معاون العميد للشؤون العلمية والدراسات العليا","عميد الكلية","عمود1"
+];
+
+const TABS = {
+  "البيانات الأساسية": ALL_COLUMNS.slice(0,18),
+  "القبول والدراسة": ALL_COLUMNS.slice(18,48),
+  "الشهادات": ALL_COLUMNS.slice(48,78),
+  "الإجراءات الإدارية": ALL_COLUMNS.slice(78,120),
+  "الإشراف والبحث": ALL_COLUMNS.slice(120,155),
+  "التمديدات والتأجيل": ALL_COLUMNS.slice(155,190),
+  "المناقشة": ALL_COLUMNS.slice(190,235),
+  "التخرج والتواقيع": ALL_COLUMNS.slice(235)
+};
+
+// ===== Build UI =====
+(function buildUI(){
+  const tabs = document.getElementById("tabs");
+  const secs = document.getElementById("sections");
+  let first = true;
+
+  for(const t in TABS){
+    const cols = TABS[t];
+
+    // Tab button
+    const b = document.createElement("button");
+    b.innerHTML = `${t} <span class="tab-count">${cols.length}</span>`;
+    if(first) b.classList.add("active");
+    b.onclick = () => openTab(t, b);
+    tabs.appendChild(b);
+
+    // Section
+    const sec = document.createElement("div");
+    sec.id = t;
+    sec.className = "section" + (first ? " active" : "");
+
+    // Section header
+    const hdr = document.createElement("div");
+    hdr.className = "section-header";
+    hdr.innerHTML = `<h2>${t}</h2><span class="section-count">${cols.length} حقل</span>`;
+    sec.appendChild(hdr);
+
+    // Grid
+    const grid = document.createElement("div");
+    grid.className = "form-grid";
+
+    cols.forEach(c => {
+      const div = document.createElement("div");
+      div.className = "field";
+      div.innerHTML = `<label>${c}</label><input id="${c}" placeholder="أدخل ${c}" ${c === "رقم الطالب" ? 'readonly' : ''}>`;
+      grid.appendChild(div);
+    });
+
+    sec.appendChild(grid);
+    secs.appendChild(sec);
+    first = false;
+  }
+})();
+
+function openTab(id, btn){
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+// ===== Toast =====
+function showToast(msg, type = ""){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "show " + type;
+  setTimeout(() => t.className = "", 3000);
+}
+
+// ===== API =====
+function post(action, payload){
+  const f = new FormData();
+  f.append("action", action);
+  f.append("payload", JSON.stringify(payload));
+  return fetch(API_URL, { method: "POST", body: f }).then(r => r.json());
+}
+
+fetch(API_URL).then(r => r.json()).then(d => {
+  document.getElementById("رقم الطالب").value = d.nextId;
+});
+
+// ===== Add Student =====
+function addStudent(){
+  if(MODE !== "ADD") return;
+  const row = ALL_COLUMNS.map(c => document.getElementById(c).value || "");
+  post("add", { row }).then(() => showToast("✅ تمت إضافة الطالب بنجاح", "success"));
+}
+
+// ===== Search =====
+function searchStudent(){
+  const raw = (_selectedNameFromSuggest || document.getElementById("searchBox").value).trim();
+  _selectedNameFromSuggest = null;
+  if(!raw) return;
+
+  // نرسل الاستعلام كما هو — الـ API يستخدم clean() للمقارنة
+  post("search", { query: raw }).then(d => {
+    if(!d.found){
+      // محاولة ثانية: نبحث عبر الاقتراحات ثم نأخذ أول نتيجة ونبحث بها مباشرة
+      post("suggest", { query: raw }).then(s2 => {
+        if(s2.suggestions && s2.suggestions.length > 0){
+          // وجدنا اسماً مطابقاً في الاقتراحات، نبحث به مباشرة
+          post("search", { query: s2.suggestions[0] }).then(d2 => {
+            if(!d2.found) return showToast("❌ الطالب غير موجود", "error");
+            doLoadStudent(d2);
+          });
+        } else {
+          showToast("❌ الطالب غير موجود", "error");
+        }
+      });
+      return;
+    }
+    doLoadStudent(d);
+  });
+}
+
+function doLoadStudent(d){
+  if(confirm("الطالب موجود، هل تريد تعديل بياناته؟")){
+    MODE = "EDIT";
+    currentRowIndex = d.rowIndex;
+    ALL_COLUMNS.forEach((c, i) => {
+      document.getElementById(c).value = d.row[i] || "";
+    });
+    document.getElementById("updateBtn").style.display = "inline-flex";
+    document.getElementById("cancelBtn").style.display = "inline-flex";
+    document.getElementById("addBtn").style.display = "none";
+    document.getElementById("exportBtn").style.display = "inline-flex";
+    document.getElementById("editNotice").style.display = "flex";
+    showToast("✅ تم تحميل بيانات الطالب", "success");
+  }
+}
+
+// ===== Save Update =====
+function saveUpdate(){
+  if(MODE !== "EDIT") return;
+
+  const btn = document.getElementById("updateBtn");
+  const original = btn.innerHTML;
+
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="animation:spin .8s linear infinite"><path d="M4 12a8 8 0 018-8v4l3-3-3-3v4a10 10 0 100 10"/></svg> جارِ الحفظ...`;
+
+  const row = ALL_COLUMNS.map(c => document.getElementById(c).value || "");
+
+  post("update", { rowIndex: currentRowIndex, row }).then(() => {
+    btn.innerHTML = `<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg> تم الحفظ`;
+    showToast("✅ تم حفظ التعديلات بنجاح", "success");
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.disabled = false;
+    }, 1800);
+  });
+}
+
+// ===== Autocomplete =====
+function highlightMatch(text, query){
+  if(!query) return text;
+  const q = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return text.replace(new RegExp(q, "gi"), m => `<span class="match">${m}</span>`);
+}
+
+// حفظ الاسم النظيف المختار من الاقتراحات
+let _selectedNameFromSuggest = null;
+
+function suggestNames(){
+  const q = document.getElementById("searchBox").value.trim();
+  const box = document.getElementById("suggestions");
+  // عند الكتابة من جديد نلغي الاسم المحفوظ
+  _selectedNameFromSuggest = null;
+  if(q.length < 2){ box.style.display = "none"; return; }
+  post("suggest", { query: q }).then(d => {
+    box.innerHTML = "";
+    if(!d.suggestions || !d.suggestions.length){ box.style.display = "none"; return; }
+    d.suggestions.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "suggest-item";
+      // نعرض الاسم مع تمييز الجزء المطابق لكن نحفظ النص الأصلي النظيف
+      div.innerHTML = highlightMatch(name, q);
+      div.onclick = () => {
+        _selectedNameFromSuggest = name;  // الاسم النظيف كما جاء من الشيت
+        document.getElementById("searchBox").value = name;
+        box.style.display = "none";
+        searchStudent();                  // بحث فوري تلقائي بالاسم الدقيق
+      };
+      box.appendChild(div);
+    });
+    box.style.display = "block";
+  });
+}
+
+document.addEventListener("click", e => {
+  if(!e.target.closest(".search-wrapper"))
+    document.getElementById("suggestions").style.display = "none";
+});
+
+// Spin animation for loading
+const style = document.createElement("style");
+style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+document.head.appendChild(style);
+
+// ===== Export: Confirm Modal =====
+function confirmExport(){
+  const name = document.getElementById("الاسم الرباعي واللقب").value || "الطالب";
+  document.getElementById("modalStudentName").textContent = name;
+  document.getElementById("confirmModal").style.display = "flex";
+}
+
+function closeExportModal(){
+  document.getElementById("confirmModal").style.display = "none";
+}
+
+// ===== Helper: get field value =====
+function fv(name){ return document.getElementById(name)?.value || ""; }
+
+// ===== Generate PDF from Excel Template via Google Apps Script =====
+function doExportPDF(){
+  closeExportModal();
+
+  const studentId = fv("رقم الطالب");
+  if(!studentId){ showToast("يرجى البحث عن الطالب أولاً","error"); return; }
+
+  const exportBtn = document.getElementById("exportBtn");
+  const origHTML = exportBtn.innerHTML;
+  exportBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> جاري التحضير...`;
+  exportBtn.disabled = true;
+
+  fetch(API_URL + "?action=exportPDF&studentId=" + encodeURIComponent(studentId))
+    .then(r => r.json())
+    .then(data => {
+      exportBtn.innerHTML = origHTML;
+      exportBtn.disabled = false;
+      if(data.error){ showToast("خطأ: " + data.error, "error"); return; }
+      if(data.pdfBase64){
+        const byteChars = atob(data.pdfBase64);
+        const byteArr = new Uint8Array(byteChars.length);
+        for(let i=0;i<byteChars.length;i++) byteArr[i]=byteChars.charCodeAt(i);
+        const blob = new Blob([byteArr],{type:"application/pdf"});
+        const url = URL.createObjectURL(blob);
+        const win = window.open(url,"_blank");
+        if(!win){ showToast("يرجى السماح بالنوافذ المنبثقة","error"); return; }
+        showToast("تم توليد PDF بنجاح ✓","success");
+      } else if(data.pdfUrl){
+        window.open(data.pdfUrl,"_blank");
+        showToast("تم توليد PDF بنجاح ✓","success");
+      } else {
+        showToast("لم يتم استلام الملف من الخادم","error");
+      }
+    })
+    .catch(err => {
+      exportBtn.innerHTML = origHTML;
+      exportBtn.disabled = false;
+      showToast("تعذّر الاتصال بالخادم","error");
+      console.error(err);
+    });
+}
+
+// ===== دالة احتياطية للعرض بدون خادم (HTML) =====
+function doExportPDFLocal(){
+  closeExportModal();
+
+  const s = {
+    // صفحة 1
+    studentId:       fv("رقم الطالب"),
+    studentName:     fv("الاسم الرباعي واللقب"),
+    studyType:       fv("نوع الدراسة"),
+    studyOrigin:     fv("اصل الدراسة"),
+    univAccepted:    fv("الجامعة المقبول فيها"),
+    collegeAccepted: fv("الكلية المقبول فيها"),
+    deptAccepted:    fv("القسم المقبول فيه"),
+    leaveNo:         fv("رقم كتاب الاجازة الدراسية"),
+    leaveDate:       fv("تاريخ كتاب الاجازة الدراسية"),
+    partialNo:       fv("رقم الامر الجامعي بالتفرغ الجزئي"),
+    partialDate:     fv("تاريخ الامر الجامعي بالتفرغ الجزئي"),
+    acceptYear:      fv("سنة القبول"),
+    acceptChannel:   fv("قناة القبول"),
+    acceptOrderNo:   fv("رقم الامر الجامعي بالقبول"),
+    acceptOrderDate: fv("تاريخ الامر الجامعي بالقبول"),
+    acceptSeq:       fv("التسلسل في الامر الجامعي"),
+    startOrderNo:    fv("رقم الامر الاداري بالمباشرة بالدراسة"),
+    startOrderDate:  fv("تاريخ الامر الاداري بالمباشرة بالدراسة"),
+    startActualDate: fv("تاريخ المباشرة الفعلية"),
+    delay1No:        fv("رقم الامر الجامعي بالتاجيل الأول"),
+    delay1Date:      fv("تاريخ الامر الجامعي بالتاجيل الأول"),
+    delay2No:        fv("رقم الامر الجامعي بالتاجيل الثاني"),
+    delay2Date:      fv("تاريخ الامر الجامعي بالتاجيل الثاني"),
+    sem1Grade:       fv("درجة الفصل الاول"),
+    sem2Grade:       fv("درجة الفصل الثاني"),
+    prepAvg:         fv("معدل السنة التحضيرية"),
+    discussGrade:    fv("درجة المناقشة"),
+    finalAvg:        fv("معدل الطالب النهائي"),
+    finalGrade:      fv("تقدير الطالب النهائي"),
+    // صفحة 2
+    ext1No:          fv("رقم كتاب التمديد الأول"),
+    ext1Date:        fv("تاريخ كتاب التمديد الأول"),
+    ext1Start:       fv("تاريخ بداية التمديد الأول"),
+    ext1End:         fv("تاريخ نهاية التمديد الأول"),
+    ext2No:          fv("رقم كتاب التمديد الثاني"),
+    ext2Date:        fv("تاريخ كتاب التمديد الثاني"),
+    ext2Start:       fv("تاريخ بداية التمديد الثاني"),
+    ext2End:         fv("تاريخ نهاية التمديد الثاني"),
+    extEx1No:        fv("رقم كتاب التمديد استثنائي اولي"),
+    extEx1Date:      fv("تاريخ كتاب التمديد استثنائي اولي"),
+    extEx1Start:     fv("تاريخ بداية التمديد استثنائي اول"),
+    extEx1End:       fv("تاريخ نهاية التمديد استثنائي اول"),
+    extEx2No:        fv("رقم كتاب التمديد استثنائي ثاني"),
+    extEx2Date:      fv("تاريخ كتاب التمديد استثنائي ثاني"),
+    extEx2Start:     fv("تاريخ بداية التمديد استثنائي ثاني"),
+    extEx2End:       fv("تاريخ نهاية التمديد استثنائي ثاني"),
+    cancel1No:       fv("رقم الامر الجامعي بالترقين الأول"),
+    cancel1Date:     fv("تاريخ الامر الجامعي بالترقين الأول"),
+    restore1No:      fv("رقم الامر الجامعي بالاعادة للدراسة"),
+    restore1Date:    fv("تاريخ الامر الجامعي بالاعادة للدراسة"),
+    cancel2No:       fv("رقم الامر الجامعي بالترقين الثاني"),
+    cancel2Date:     fv("تاريخ الامر الجامعي بالترقين الثاني"),
+    restore2No:      fv("رقم كتاب الاعادة للدراسة بالترقين الثاني"),
+    restore2Date:    fv("تاريخ كتاب الاعادة للدراسة  بالترقين الثاني"),
+    thesisAr:        fv("عنوان الرسالة باللغة العربية"),
+    thesisEn:        fv("عنوان الرسالة باللغة الإنكليزية"),
+    thesisCommNo:    fv("رقم كتاب تشكيل لجنة إقرار البحث"),
+    thesisCommDate:  fv("تاريخ كتاب تشكيل لجنة إقرار البحث"),
+    deliveryDate:    fv("تاريخ تسليم الرسالة او الاطروحة الى القسم العلمي"),
+    deliveryDocNo:   fv("رقم كتاب تسليم الرسالة او الاطروحة"),
+    deliveryDocDate: fv("تاريخ كتاب تسليم الرسالة او الاطروحة"),
+    // صفحة 3
+    sup1Name:        fv("اسم المشرف الأول"),
+    sup1Title:       fv("اللقب العلمي للمشرف1"),
+    sup1OrderNo:     fv("رقم الامر الإداري بالمشرف الأول"),
+    sup1OrderDate:   fv("تاريخ الامر الإداري بالمشرف الأول"),
+    sup2Name:        fv("اسم المشرف الثاني"),
+    sup2Title:       fv("اللقب العلمي للمشرف2"),
+    sup2OrderNo:     fv("رقم الامر الإداري بالمشرف الثاني"),
+    sup2OrderDate:   fv("تاريخ الامر الإداري بالمشرف الثاني"),
+    eval1:           fv("اسم المقوم العلمي"),   eval1T: fv("اللقب العلمي-العلمي"),
+    eval2:           fv("اسم المقوم العلمي2"),  eval2T: fv("اللقب العلمي-العلمي2"),
+    evalLang:        fv("اسم المقوم اللغوي"),   evalLangT: fv("اللقب العلمي-اللغوي"),
+    discCommNo:      fv("رقم محضر تشكيل لجنة المناقشة"),
+    discCommDate:    fv("تاريخ محضر تشكيل لجنة المناقشة"),
+    discDate:        fv("تاريخ المناقشة"),
+    members: [1,2,3,4,5,6,7].map(i=>({
+      name:    fv("اسم عضو لجنة المناقشة"+i),
+      spec:    fv("التخصص العام"+i),
+      specD:   fv("التخصص الدقيق"+i),
+      work:    fv("مكان العمل"+i),
+      role:    i===1 ? fv("رئيسا") : fv("عضوا"+i)
+    })),
+    organizer:   fv("منظم الاستمارة"),
+    secretary:   fv("مقرر الدراسات العليا"),
+    deptHead:    fv("رئيس القسم"),
+    vdean:       fv("معاون العميد للشؤون العلمية والدراسات العليا"),
+    dean:        fv("عميد الكلية"),
+  };
+
+  const v = x => (x && x.toString().trim()) ? x.toString().trim() : '';
+
+  /* نسب الأعمدة A-J بالنسبة المئوية مطابقة لملف Excel */
+  /* A=5% B=13% C=10% D=10% E=9% F=12% G=10% H=10% I=10% J=11% */
+
+  const VAL = (val, border='1px solid #888') =>
+    `style="border:${border};text-align:center;vertical-align:middle;padding:3px 5px;font-size:9.5pt;min-height:20px"`;
+
+  const LBL = (align='right') =>
+    `style="text-align:${align};vertical-align:middle;padding:1px 5px;font-size:9pt;border:none"`;
+
+  /* رأس القسم: خلفية رمادية، رقم يسار bold، عنوان يمين */
+  const SH = (num, title, colspan=10) => `
+    <tr style="background:#d9d9d9">
+      <td colspan="${colspan-1}" style="border:2px solid #555;text-align:right;padding:2px 6px;font-size:9.5pt;font-weight:bold;vertical-align:middle">${title}</td>
+      <td style="border:2px solid #555;border-right:none;text-align:center;padding:2px 4px;font-size:9.5pt;font-weight:bold;vertical-align:middle">${num}</td>
+    </tr>`;
+
+  const PAGE_HEADER = `
+    <table style="width:100%;border-collapse:collapse">
+      <tr>
+        <td style="width:35%;text-align:right;vertical-align:top;padding:0 4px 5px">
+          <div style="font-size:14pt;font-weight:bold">جامعة الكوفة</div>
+          <div style="font-size:10.5pt">كلية التخطيط العمراني</div>
+        </td>
+        <td style="width:30%;text-align:center;vertical-align:middle;padding-bottom:5px">
+          <img src="https://upload.wikimedia.org/wikipedia/ar/thumb/9/94/University_of_Kufa_logo.png/120px-University_of_Kufa_logo.png"
+               style="width:70px;height:70px;object-fit:contain" onerror="this.style.display='none'">
+        </td>
+        <td style="width:35%;text-align:left;vertical-align:top;padding:0 4px 5px">
+          <div style="font-size:9pt">نموذج استمارة رقم 2011</div>
+        </td>
+      </tr>
+    </table>
+    <div style="border-top:1.5pt solid #000;margin-bottom:4mm"></div>
+    <div style="text-align:center;font-size:12pt;font-weight:bold;margin-bottom:4mm">استمارة السيرة الدراسية لطلبة الدراسات العليا</div>`;
+
+  const PF = n => `
+    <div style="position:absolute;bottom:6mm;left:10mm;right:10mm;display:flex;justify-content:space-between;font-size:8pt;color:#333;border-top:0.5pt solid #888;padding-top:3px">
+      <span>جميع الحقوق محفوظة © لقسم الدراسات العليا</span>
+      <span>استمارة ${n} من 3</span>
+      <span>شعبة شؤون الطلبة</span>
+    </div>`;
+
+  /* ====================== CSS أعمدة الجدول الرئيسي ======================
+     10 أعمدة A-J بنسب مطابقة للـ Excel
+  */
+  const COL_WIDTHS = `
+    <col style="width:5%">   <!-- A -->
+    <col style="width:13%">  <!-- B -->
+    <col style="width:10%">  <!-- C -->
+    <col style="width:10%">  <!-- D -->
+    <col style="width:9%">   <!-- E -->
+    <col style="width:12%">  <!-- F -->
+    <col style="width:10%">  <!-- G -->
+    <col style="width:10%">  <!-- H -->
+    <col style="width:10%">  <!-- I -->
+    <col style="width:11%">  <!-- J -->`;
+
+  /* دالة لبناء td فارغة بدون حدود */
+  const E = (colspan=1) => `<td colspan="${colspan}" style="border:none;padding:0"></td>`;
+
+  /* td تسمية (بدون حدود) */
+  const L = (txt, colspan=1, align='right') =>
+    `<td colspan="${colspan}" ${LBL(align)}>${txt}</td>`;
+
+  /* td قيمة بحدود thin */
+  const V = (val, colspan=1) =>
+    `<td colspan="${colspan}" ${VAL(val)}>${v(val)}</td>`;
+
+  /* td قيمة بحدود double */
+  const VD = (val, colspan=1) =>
+    `<td colspan="${colspan}" ${VAL(val,'2px double #333')}>${v(val)}</td>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>السيرة الدراسية - ${s.studentName}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Tahoma,sans-serif;font-size:10pt;color:#000;background:#fff;direction:rtl}
+  .pg{width:210mm;min-height:297mm;padding:10mm 12mm 18mm;page-break-after:always;position:relative;background:#fff}
+  .pg:last-child{page-break-after:avoid}
+  .mt{width:100%;border-collapse:collapse;table-layout:fixed}
+  .mt td,.mt th{vertical-align:middle;overflow:hidden}
+  @media print{body{margin:0}@page{size:A4;margin:0}}
+</style>
+</head>
+<body>
+
+<!-- ============================== صفحة 1 ============================== -->
+<div class="pg">
+${PAGE_HEADER}
+
+<!-- G2: رقم الطالب (أعمدة G+H يمين) -->
+<table class="mt" style="margin-bottom:3mm">
+  ${COL_WIDTHS}
+  <tr>
+    ${E(6)}
+    <td colspan="2" ${LBL('right')}>رقم الطالب:</td>
+    <td colspan="2" style="border:1px solid #888;background:#FFFF00;text-align:center;padding:3px;font-size:10pt;font-weight:bold">${v(s.studentId)}</td>
+  </tr>
+</table>
+
+<!-- قسم 1 -->
+<table class="mt">
+  ${COL_WIDTHS}
+  ${SH(1,'بيانات الطالب:')}
+  <!-- R5: A5:B5=تسمية | C5:F5=قيمة | H5=تسمية | I5:J5=قيمة -->
+  <tr>
+    ${L('الاسم الرباعي واللقب',2)}
+    <td colspan="4" style="border:1px solid #888;text-align:center;vertical-align:middle;padding:3px 5px;font-size:9pt;color:#777">الرجاء ادخال رقم الطالب / ${v(s.studentName)}</td>
+    ${L('نوع الدراسة',1)}
+    ${E(1)}
+    ${V(s.studyType,2)}
+  </tr>
+  <!-- R7: A7:B7=تسمية | C7:D7=قيمة | E7:F7=تسمية | G7:J7=قيمة -->
+  <tr>
+    ${L('الجامعة المقبول فيها',2)}
+    ${V(s.univAccepted,2)}
+    ${L('الكلية المقبول فيها',2)}
+    ${V(s.collegeAccepted,4)}
+  </tr>
+  <!-- R9: A9:B9=تسمية | C9:E9=قيمة | F9=تسمية | G9:J9=قيمة -->
+  <tr>
+    ${L('القسم المقبول فيه',2)}
+    ${V(s.deptAccepted,3)}
+    ${L('اصل الدراسة',1)}
+    ${V(s.studyOrigin,4)}
+  </tr>
+  <!-- R11: A11:B11=للموظفين فقط -->
+  <tr>
+    <td colspan="2" style="border:1px solid #888;text-align:center;padding:2px 4px;font-size:9pt;font-weight:bold;background:#e8e8e8">للموظفين فقط:</td>
+    ${L('رقم كتاب الاجازة الدراسية',3)}
+    ${V(s.leaveNo,2)}
+    ${L('تاريخ كتاب الاجازة الدراسية',1)}
+    ${V(s.leaveDate,2)}
+  </tr>
+  <tr>
+    ${E(2)}
+    ${L('رقم الامر الجامعي بالتفرغ الجزئي',3)}
+    ${V(s.partialNo,2)}
+    ${L('تاريخ الامر الجامعي بالتفرغ الجزئي',1)}
+    ${V(s.partialDate,2)}
+  </tr>
+</table>
+
+<!-- قسم 2 -->
+<table class="mt" style="margin-top:3mm">
+  ${COL_WIDTHS}
+  ${SH(2,'معلومات القبول:')}
+  <!-- R21: A21:B21=تسمية | C21:D21=قيمة | F21=تسمية | G21:I21=قيمة -->
+  <tr>
+    ${L('سنة القبول',2)}
+    ${V(s.acceptYear,2)}
+    ${E(1)}
+    ${L('قناة القبول',1)}
+    ${V(s.acceptChannel,3)}
+    ${E(1)}
+  </tr>
+  <!-- R23/24: A23:C23=تسمية | A24:C24=قيمة | E23:G23=تسمية | E24:G24=قيمة | I23:J23=تسمية | I24:J24=قيمة -->
+  <tr>
+    ${L('رقم الامر الجامعي بالقبول',3)}
+    ${E(1)}
+    ${L('تاريخ الامر الجامعي بالقبول',3)}
+    ${E(1)}
+    ${L('التسلسل في الامر الجامعي',2)}
+  </tr>
+  <tr>
+    ${V(s.acceptOrderNo,3)}
+    ${E(1)}
+    ${V(s.acceptOrderDate,3)}
+    ${E(1)}
+    ${V(s.acceptSeq,2)}
+  </tr>
+  <!-- R26/27 -->
+  <tr>
+    ${L('رقم الامر الإداري بالمباشرة بالدراسة',3)}
+    ${E(1)}
+    ${L('تاريخ الامر الإداري بالمباشرة بالدراسة',3)}
+    ${E(1)}
+    ${L('تاريخ المباشرة الفعلية',2)}
+  </tr>
+  <tr>
+    ${V(s.startOrderNo,3)}
+    ${E(1)}
+    ${V(s.startOrderDate,3)}
+    ${E(1)}
+    ${V(s.startActualDate,2)}
+  </tr>
+</table>
+
+<!-- قسم 3 -->
+<table class="mt" style="margin-top:3mm">
+  ${COL_WIDTHS}
+  ${SH(3,'معلومات التاجيل:')}
+  <!-- R32: A32:C32=تسمية | D32:E32=قيمة | F32:H32=تسمية | I32:J32=قيمة -->
+  <tr>
+    ${L('رقم الامر الجامعي بالتاجيل الأول',3)}
+    ${V(s.delay1No,2)}
+    ${L('تاريخ الامر الجامعي بالتاجيل الأول',3)}
+    ${V(s.delay1Date,2)}
+  </tr>
+  <tr>
+    ${L('رقم الامر الجامعي بالتاجيل الثاني',3)}
+    ${V(s.delay2No,2)}
+    ${L('تاريخ الامر الجامعي بالتاجيل الثاني',3)}
+    ${V(s.delay2Date,2)}
+  </tr>
+</table>
+
+<!-- قسم 4 -->
+<table class="mt" style="margin-top:3mm">
+  ${COL_WIDTHS}
+  ${SH(4,'معلومات عن نتائج الطالب:')}
+  <!-- R39: A39:B39=تسمية | C39:D39=قيمة | F39:G39=تسمية | H39:I39=قيمة -->
+  <tr>
+    ${L('درجة الفصل الأول',2)}
+    ${V(s.sem1Grade,2)}
+    ${E(1)}
+    ${L('درجة الفصل الثاني',2)}
+    ${V(s.sem2Grade,2)}
+    ${E(1)}
+  </tr>
+  <tr>
+    ${L('معدل السنة التحضيرية',2)}
+    ${V(s.prepAvg,2)}
+    ${E(1)}
+    ${L('درجة المناقشة',2)}
+    ${V(s.discussGrade,2)}
+    ${E(1)}
+  </tr>
+  <tr>
+    ${L('معدل الطالب النهائي',2)}
+    ${V(s.finalAvg,2)}
+    ${E(1)}
+    ${L('تقدير الطالب النهائي',2)}
+    ${V(s.finalGrade,2)}
+    ${E(1)}
+  </tr>
+</table>
+
+${PF('1')}
+</div>
+
+<!-- ============================== صفحة 2 ============================== -->
+<div class="pg">
+${PAGE_HEADER}
+
+<!-- قسم 5 -->
+<table class="mt">
+  ${COL_WIDTHS}
+  ${SH(5,'معلومات عن التمديدات')}
+  <!-- A49:B49=التمديد الأول (تسمية على اليمين) -->
+  <tr>
+    ${E(8)}
+    <td colspan="2" style="border:1px solid #888;text-align:right;padding:2px 6px;font-size:9pt;font-weight:bold;background:#f0f0f0">التمديد الأول</td>
+  </tr>
+  <!-- R50: C50:D50=تسمية | E50:F50=قيمة | G50=تسمية | H50:I50=قيمة -->
+  <tr>
+    ${E(2)}
+    ${L('رقم الامر الإداري بالتمديد',2)}
+    ${V(s.ext1No,2)}
+    ${L('تاريخه',1)}
+    ${V(s.ext1Date,2)}
+    ${E(1)}
+  </tr>
+  <!-- R52: C52:D52=تسمية | E52:F52=قيمة | G52:H52=تسمية | I52:J52=قيمة -->
+  <tr>
+    ${E(2)}
+    ${L('تاريخ بداية التمديد',2)}
+    ${V(s.ext1Start,2)}
+    ${L('تاريخ نهاية التمديد',2)}
+    ${V(s.ext1End,2)}
+  </tr>
+
+  <tr><td colspan="10" style="height:3mm;border:none"></td></tr>
+
+  <tr>
+    ${E(8)}
+    <td colspan="2" style="border:1px solid #888;text-align:right;padding:2px 6px;font-size:9pt;font-weight:bold;background:#f0f0f0">التمديد الثاني</td>
+  </tr>
+  <tr>
+    ${E(2)}
+    ${L('رقم الامر الإداري بالتمديد',2)}
+    ${V(s.ext2No,2)}
+    ${L('تاريخه',1)}
+    ${V(s.ext2Date,2)}
+    ${E(1)}
+  </tr>
+  <tr>
+    ${E(2)}
+    ${L('تاريخ بداية التمديد',2)}
+    ${V(s.ext2Start,2)}
+    ${L('تاريخ نهاية التمديد',2)}
+    ${V(s.ext2End,2)}
+  </tr>
+
+  <tr><td colspan="10" style="height:3mm;border:none"></td></tr>
+
+  <!-- التمديد الاستثنائي الأول: A61:B61=تسمية -->
+  <tr>
+    ${E(8)}
+    <td colspan="2" style="border:1px solid #888;text-align:right;padding:2px 6px;font-size:9pt;font-weight:bold;background:#f0f0f0">التمديد الاستثنائي الأول</td>
+  </tr>
+  <!-- R62: C62:D62=تسمية | E62:F62=تسمية | G62:H62=تسمية | I62:J62=تسمية -->
+  <tr>
+    ${E(2)}
+    ${L('رقم الامر الإداري بالتمديد',2)}
+    ${L('تاريخه',2)}
+    ${L('تاريخ بداية التمديد',2)}
+    ${L('تاريخ نهاية التمديد',2)}
+  </tr>
+  <!-- R63: قيم -->
+  <tr>
+    ${E(2)}
+    ${V(s.extEx1No,2)}
+    ${V(s.extEx1Date,2)}
+    ${V(s.extEx1Start,2)}
+    ${V(s.extEx1End,2)}
+  </tr>
+
+  <tr><td colspan="10" style="height:3mm;border:none"></td></tr>
+
+  <tr>
+    ${E(8)}
+    <td colspan="2" style="border:1px solid #888;text-align:right;padding:2px 6px;font-size:9pt;font-weight:bold;background:#f0f0f0">التمديد الاستثنائي الثاني</td>
+  </tr>
+  <tr>
+    ${E(2)}
+    ${L('رقم الامر الإداري بالتمديد',2)}
+    ${L('تاريخه',2)}
+    ${L('تاريخ بداية التمديد',2)}
+    ${L('تاريخ نهاية التمديد',2)}
+  </tr>
+  <tr>
+    ${E(2)}
+    ${V(s.extEx2No,2)}
+    ${V(s.extEx2Date,2)}
+    ${V(s.extEx2Start,2)}
+    ${V(s.extEx2End,2)}
+  </tr>
+</table>
+
+<!-- قسم 6 -->
+<table class="mt" style="margin-top:3mm">
+  ${COL_WIDTHS}
+  ${SH(6,'معلومات ترقين القيد:')}
+  <!-- R72: A72:C72=تسمية | D72:E72=تسمية | F72:H72=تسمية | I72:J72=تسمية -->
+  <tr>
+    ${L('رقم الامر الجامعي بالترقين الأول',3)}
+    ${L('تاريخه',2)}
+    ${L('رقم الامر الجامعي بالاعادة للدراسة',3)}
+    ${L('تاريخه',2)}
+  </tr>
+  <tr>
+    ${V(s.cancel1No,3)}
+    ${V(s.cancel1Date,2)}
+    ${V(s.restore1No,3)}
+    ${V(s.restore1Date,2)}
+  </tr>
+  <tr>
+    ${L('رقم الامر الجامعي بالترقين الثاني',3)}
+    ${L('تاريخه',2)}
+    ${L('رقم الامر الجامعي بالاعادة للدراسة',3)}
+    ${L('تاريخه',2)}
+  </tr>
+  <tr>
+    ${V(s.cancel2No,3)}
+    ${V(s.cancel2Date,2)}
+    ${V(s.restore2No,3)}
+    ${V(s.restore2Date,2)}
+  </tr>
+</table>
+
+<!-- قسم 7 -->
+<table class="mt" style="margin-top:3mm">
+  ${COL_WIDTHS}
+  ${SH(7,'معلومات عن الرسالة:')}
+  <!-- R82: B82:C82=تسمية | D81:J83=قيمة عريضة (تمتد 3 صفوف) -->
+  <tr>
+    ${E(1)}
+    ${L('عنوان الرسالة باللغة العربية',2)}
+    <td colspan="7" style="border:1px solid #888;text-align:right;vertical-align:middle;padding:5px 8px;font-size:10pt;min-height:32px">${v(s.thesisAr)}</td>
+  </tr>
+  <tr>
+    ${E(1)}
+    ${L('عنوان الرسالة باللغة الإنكليزية',2)}
+    <td colspan="7" style="border:1px solid #888;direction:ltr;text-align:left;vertical-align:middle;padding:5px 8px;font-size:10pt;min-height:32px">${v(s.thesisEn)}</td>
+  </tr>
+  <!-- R89: A89:C89=تسمية | D89:E89=قيمة | F89:H89=تسمية | I89:J89=قيمة -->
+  <tr>
+    ${L('رقم كتاب تشكيل لجنة إقرار البحث',3)}
+    ${V(s.thesisCommNo,2)}
+    ${L('تاريخ كتاب تشكيل لجنة إقرار البحث',3)}
+    ${V(s.thesisCommDate,2)}
+  </tr>
+</table>
+
+<!-- قسم 8 -->
+<table class="mt" style="margin-top:3mm">
+  ${COL_WIDTHS}
+  ${SH(8,'معلومات تسليم الرسالة:')}
+  <!-- R94: B94:E94=تسمية | F94:G94=قيمة -->
+  <tr>
+    ${E(1)}
+    ${L('تاريخ تسليم الرسالة او الاطروحة الى القسم العلمي',4)}
+    ${V(s.deliveryDate,2)}
+    ${E(3)}
+  </tr>
+  <!-- R96: A96:C96=تسمية | D96:E96=قيمة | F96:H96=تسمية | I96:J96=قيمة -->
+  <tr>
+    ${L('رقم كتاب تسليم الرسالة او الاطروحة',3)}
+    ${V(s.deliveryDocNo,2)}
+    ${L('تاريخ كتاب تسليم الرسالة او الاطروحة',3)}
+    ${V(s.deliveryDocDate,2)}
+  </tr>
+  <!-- R98: B98:G98=ملاحظة header -->
+  <tr>
+    ${E(1)}
+    <td colspan="9" style="border:1px solid #888;background:#e8e8e8;text-align:right;padding:2px 6px;font-size:8.5pt;font-weight:bold">
+      ملاحظة عن الفقرة أعلاه (بالنسبة للطلبة المتخرجين او بأنتظار المناقشة):
+    </td>
+  </tr>
+  <tr>
+    ${E(2)}
+    <td colspan="8" style="border:1px solid #888;border-top:none;text-align:right;padding:3px 6px;font-size:8.5pt;line-height:1.75">
+      الحقل الأول مهم جداً كونه يمثل نهاية الفترة القانونية للدراسة ولا يجوز تركه فارغاً مطلقاً.<br>
+      الحقل الثاني يمثل الاثبات القانوني لتاريخ التسليم وعلى القسم المعني تزويد الطالب به حال تسليمه الرسالة.
+    </td>
+  </tr>
+</table>
+
+${PF('2')}
+</div>
+
+<!-- ============================== صفحة 3 ============================== -->
+<div class="pg">
+${PAGE_HEADER}
+
+<!-- قسم 9 -->
+<table class="mt">
+  ${COL_WIDTHS}
+  ${SH(9,'معلومات الاشراف:')}
+  <!-- R106: A106:B106=اسم | C106=ولقبه | D106:H106=قيمة -->
+  <tr>
+    ${L('اسم المشرف الأول',2)}
+    ${L('ولقبه العلمي',1)}
+    <td colspan="5" style="border:1px solid #888;text-align:center;vertical-align:middle;padding:3px 5px;font-size:9.5pt">${v(s.sup1Title)} ${v(s.sup1Name)}</td>
+    ${E(2)}
+  </tr>
+  <!-- R108: A108:C108=تسمية | D108:E108=قيمة | F108:H108=تسمية | I108:J108=قيمة -->
+  <tr>
+    ${L('رقم الامر الإداري بالمشرف الأول',3)}
+    ${V(s.sup1OrderNo,2)}
+    ${L('تاريخ الامر الإداري بالمشرف الأول',3)}
+    ${V(s.sup1OrderDate,2)}
+  </tr>
+  <tr>
+    ${L('اسم المشرف الثاني',2)}
+    ${L('ولقبه العلمي',1)}
+    <td colspan="5" style="border:1px solid #888;text-align:center;vertical-align:middle;padding:3px 5px;font-size:9.5pt">${v(s.sup2Title)} ${v(s.sup2Name)}</td>
+    ${E(2)}
+  </tr>
+  <tr>
+    ${L('رقم الامر الإداري بالمشرف الثاني',3)}
+    ${V(s.sup2OrderNo,2)}
+    ${L('تاريخ الامر الإداري بالمشرف الثاني',3)}
+    ${V(s.sup2OrderDate,2)}
+  </tr>
+  <!-- R114: B114:D114=تسمية | E114:G114=تسمية | H114:J114=تسمية -->
+  <tr>
+    ${E(1)}
+    ${L('اسم المقوم العلمي ولقبه العلمي',3,'center')}
+    ${L('اسم المقوم العلمي ولقبه العلمي',3,'center')}
+    ${L('اسم المقوم اللغوي ولقبه العلمي',3,'center')}
+  </tr>
+  <!-- R115: قيم -->
+  <tr>
+    ${E(1)}
+    ${V(v(s.eval1T)+' '+v(s.eval1),3)}
+    ${V(v(s.eval2T)+' '+v(s.eval2),3)}
+    ${V(v(s.evalLangT)+' '+v(s.evalLang),3)}
+  </tr>
+</table>
+
+<!-- قسم 10 -->
+<table class="mt" style="margin-top:3mm">
+  ${COL_WIDTHS}
+  ${SH(10,'معلومات المناقشة:')}
+  <!-- R120: A120:C120=تسمية | D120:E120=قيمة | F120:H120=تسمية | I120:J120=قيمة -->
+  <tr>
+    ${L('رقم محضر تشكيل لجنة المناقشة',3)}
+    ${V(s.discCommNo,2)}
+    ${L('تاريخ محضر تشكيل لجنة المناقشة',3)}
+    ${V(s.discCommDate,2)}
+  </tr>
+  <!-- R122: B122:C122=تسمية | D122:F122=قيمة -->
+  <tr>
+    ${E(1)}
+    ${L('تاريخ المناقشة',2)}
+    ${V(s.discDate,3)}
+    ${E(4)}
+  </tr>
+</table>
+
+<!-- جدول لجنة المناقشة: حدود double مطابق للـ Excel R124-R131 -->
+<table class="mt" style="margin-top:2mm;margin-bottom:3mm;font-size:9pt">
+  ${COL_WIDTHS}
+  <!-- R124: A124:C124 | D124:E124 | F124:G124 | H124:I124 | J124 -->
+  <tr style="background:#d9d9d9">
+    <td colspan="3" style="border:2px double #333;text-align:center;padding:3px 5px;font-weight:bold">اسم عضو لجنة المناقشة ولقبه</td>
+    <td colspan="2" style="border:2px double #333;text-align:center;padding:3px 5px;font-weight:bold">التخصص العام</td>
+    <td colspan="2" style="border:2px double #333;text-align:center;padding:3px 5px;font-weight:bold">التخصص الدقيق</td>
+    <td colspan="2" style="border:2px double #333;text-align:center;padding:3px 5px;font-weight:bold">محل العمل</td>
+    <td colspan="1" style="border:2px double #333;text-align:center;padding:3px 5px;font-weight:bold">اللجنة</td>
+  </tr>
+  ${s.members.map(m=>`<tr>
+    <td colspan="3" style="border:2px double #333;padding:4px 6px;text-align:right;min-height:24px">${v(m.name)}</td>
+    <td colspan="2" style="border:2px double #333;padding:4px 6px;text-align:center">${v(m.spec)}</td>
+    <td colspan="2" style="border:2px double #333;padding:4px 6px;text-align:center">${v(m.specD)}</td>
+    <td colspan="2" style="border:2px double #333;padding:4px 6px;text-align:center">${v(m.work)}</td>
+    <td colspan="1" style="border:2px double #333;padding:4px 6px;text-align:center">${v(m.role)}</td>
+  </tr>`).join('')}
+</table>
+
+<!-- ملاحظات R134-R138 -->
+<table class="mt" style="margin-bottom:2mm;font-size:8.5pt">
+  ${COL_WIDTHS}
+  <tr>
+    <td colspan="2" style="border:2px solid #555;background:#d9d9d9;text-align:right;padding:2px 6px;font-size:9.5pt;font-weight:bold">ملاحظات</td>
+    ${E(8)}
+  </tr>
+  <tr>
+    <td style="border:1px solid #888;text-align:center;font-weight:bold;vertical-align:top;padding:3px">1</td>
+    <td colspan="9" style="border:1px solid #888;border-right:none;padding:3px 6px;text-align:right;line-height:1.75">تملئ حقول الاستمارات بدقة ولا يجوز ترك الحقول فارغة في حال شمول الطالب بفقراتها، وفي حالة عدم شموله ببعض فقرات الاستمارة يؤشر في الاستمارة بعلامة (-) او عبارة (لا يوجد)</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #888;border-top:none;text-align:center;font-weight:bold;vertical-align:top;padding:3px">2</td>
+    <td colspan="9" style="border:1px solid #888;border-right:none;border-top:none;padding:3px 6px;text-align:right;line-height:1.75">اعتمد الأوامر الجامعية كأساس للمعلومات الواردة في فقرات الاستمارة، والاوامر الإدارية في حال عدم وجود امر جامعي، محاضر جلسات مجالس الكليات ومصادقات مجلس الجامعة في حال عدم توافر امر جامعي او اداري</td>
+  </tr>
+</table>
+
+<!-- R140: إقرار — double border -->
+<table class="mt" style="margin-bottom:3mm;font-size:8.5pt">
+  ${COL_WIDTHS}
+  <tr>
+    <td colspan="10" style="border:2px double #333;padding:4px 8px;text-align:center">نحن الموقعون ادناه، نقر بصحة المعلومات الواردة في هذه الاستمارة ونتحمل كافة المسؤوليات المترتبة عليها اذا ظهر خلاف ذلك ولاجله وقعنا. (يجب ذكر تاريخ التوقيع)</td>
+  </tr>
+</table>
+
+<!-- التوقيعات R142-R143: B142:C142=منظم | E142:F142=مقرر | H142:J142=رئيس -->
+<table class="mt" style="margin-bottom:2mm">
+  ${COL_WIDTHS}
+  <tr>
+    ${E(1)}
+    <td colspan="2" style="text-align:center;padding:1px 4px;font-size:9pt;border:none">منظم الاستمارة</td>
+    ${E(1)}
+    <td colspan="2" style="text-align:center;padding:1px 4px;font-size:9pt;border:none">مقرر الدراسات العليا</td>
+    ${E(1)}
+    <td colspan="3" style="text-align:center;padding:1px 4px;font-size:9pt;border:none">رئيس القسم</td>
+  </tr>
+  <tr>
+    ${E(1)}
+    <td colspan="2" style="border:1px solid #888;text-align:center;padding:4px;font-size:9.5pt;min-height:22px">${v(s.organizer)}</td>
+    ${E(1)}
+    <td colspan="2" style="border:1px solid #888;text-align:center;padding:4px;font-size:9.5pt;min-height:22px">${v(s.secretary)}</td>
+    ${E(1)}
+    <td colspan="3" style="border:1px solid #888;text-align:center;padding:4px;font-size:9.5pt;min-height:22px">${v(s.deptHead)}</td>
+  </tr>
+</table>
+
+<!-- R145: A145:D145=معاون العميد | E145:G145=قيمة -->
+<table class="mt" style="margin-bottom:2mm">
+  ${COL_WIDTHS}
+  <tr>
+    ${L('معاون العميد للشؤون العلمية والدراسات العليا',4)}
+    ${V(s.vdean,3)}
+    ${E(3)}
+  </tr>
+</table>
+
+<!-- R147: F147=عميد الكلية | G147:J147=قيمة -->
+<table class="mt">
+  ${COL_WIDTHS}
+  <tr>
+    ${E(5)}
+    ${L('عميد الكلية',1,'center')}
+    ${V(s.dean,4)}
+  </tr>
+</table>
+
+${PF('3')}
+</div>
+
+</body></html>`;
+
+  const win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(html);
+  win.document.close();
+  win.onload = () => {
+    setTimeout(() => { win.focus(); win.print(); }, 400);
+  };
+}
+</script>
+
+</body>
+</html>
