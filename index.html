@@ -648,7 +648,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbwx-2b-8iyhZy7z3HGedPlCVasKgDL9pnCdC5bn-oiKyNv9Uh3C-H29S1v4BoU4ppo/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzYnR9gpaEYU1gGgaslW3bKxV0XBIMNb9a_opjx_n0qtb2D9uNpWPJxp2l6lPX5sRbW/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -1568,10 +1568,12 @@ var _sessionTimer=null, _warnTimer=null;
 var SESSION_TIMEOUT = 30*60*1000;
 var WARN_BEFORE    = 60*1000;
 function resetSession(){
-  document.getElementById('sessionWarning').style.display='none';
+  var sw = document.getElementById('sessionWarning');
+  if(sw) sw.style.display='none';
   clearTimeout(_sessionTimer); clearTimeout(_warnTimer);
   _warnTimer = setTimeout(function(){
-    document.getElementById('sessionWarning').style.display='flex';
+    var sw2 = document.getElementById('sessionWarning');
+    if(sw2) sw2.style.display='flex';
     _sessionTimer = setTimeout(function(){
       clearSession(); showToast('انتهت الجلسة تلقائياً','error');
       setTimeout(function(){ location.reload(); }, 2000);
