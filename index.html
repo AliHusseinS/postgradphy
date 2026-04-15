@@ -1347,7 +1347,8 @@ function renderStudents(data){
 
 function openStats(){
   document.getElementById('statsOverlay').classList.add('open');
-  if(!_statsLoaded) loadStats();
+  _statsLoaded = false;
+  loadStats();
 }
 function closeStats(e){
   if(e.target===document.getElementById('statsOverlay'))
@@ -1371,12 +1372,15 @@ function loadStats(){
 }
 function buildStatsUI(s){
   var html='';
+  // حساب diploma في حال لم يأتِ من Script
+  var diplomaCount = (s.diploma !== undefined) ? (s.diploma||0) : (s.total - (s.master||0) - (s.doctor||0));
+  if(diplomaCount < 0) diplomaCount = 0;
   html+='<div class="stats-cards">';
   html+='<div class="stats-card"><div class="sc-num">'+s.total+'</div><div class="sc-lbl">إجمالي الطلاب</div></div>';
-  html+='<div class="stats-card"><div class="sc-num" style="color:#1565C0">'+s.master+'</div><div class="sc-lbl">طلاب ماجستير</div></div>';
+  html+='<div class="stats-card"><div class="sc-num" style="color:#1565C0">'+(s.master||0)+'</div><div class="sc-lbl">طلاب ماجستير</div></div>';
   html+='<div class="stats-card"><div class="sc-num" style="color:#B71C1C">'+(s.doctor||0)+'</div><div class="sc-lbl">طلاب دكتوراه</div></div>';
-  if(s.diploma && s.diploma > 0){
-    html+='<div class="stats-card"><div class="sc-num" style="color:#6A1B9A">'+s.diploma+'</div><div class="sc-lbl">دبلوم عالٍ</div></div>';
+  if(diplomaCount > 0){
+    html+='<div class="stats-card"><div class="sc-num" style="color:#6A1B9A">'+diplomaCount+'</div><div class="sc-lbl">دبلوم عالٍ</div></div>';
   }
   html+='</div>';
   html+='<div class="stats-table-wrap"><table class="stats-table"><thead><tr>';
@@ -1420,7 +1424,9 @@ function buildStatsUI(s){
     html+='</tr></thead><tbody>';
     var totM=0, totD=0, totDp=0;
     s.years.forEach(function(y){
-      var m=(y.master||0), d=(y.doctor||0), dp=(y.diploma||0), t=m+d+dp;
+      var m=(y.master||0), d=(y.doctor||0);
+      var dp = (y.diploma !== undefined) ? (y.diploma||0) : 0;
+      var t=m+d+dp;
       totM+=m; totD+=d; totDp+=dp;
       html+='<tr>';
       html+='<td>'+escapeHtml(y.year.toString())+'</td>';
