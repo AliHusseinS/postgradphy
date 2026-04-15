@@ -282,7 +282,6 @@ header .spacer { flex: 1; }
 .stNum{background:#E8F5E9;color:#2E7D32;padding:2px 8px;border-radius:6px;font-size:.78rem}
 </style>
 <style>
-/* ===== Logs ===== */
 #logsBtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'Cairo',sans-serif;transition:.2s}
 #logsBtn:hover{background:rgba(255,255,255,.22)}
 #logsOverlay{position:fixed;inset:0;z-index:8899;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center}
@@ -295,12 +294,11 @@ header .spacer { flex: 1; }
 #logsFilter input{flex:1;min-width:160px;padding:9px 14px;border-radius:10px;border:1.5px solid #D8EDEA;font-family:'Cairo',sans-serif;font-size:.88rem;outline:none;direction:rtl}
 #logsFilter input:focus{border-color:#3949AB;box-shadow:0 0 0 3px rgba(57,73,171,.1)}
 #logsFilter select{padding:9px 12px;border-radius:10px;border:1.5px solid #D8EDEA;font-family:'Cairo',sans-serif;font-size:.85rem;outline:none;background:#F5FAFA;cursor:pointer}
-.logs-refresh-btn{padding:9px 16px;border-radius:10px;border:1.5px solid #D8EDEA;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;background:#fff;color:#3949AB;transition:.2s}
-.logs-refresh-btn:hover{background:#E8EAF6}
-.logs-export-btn{padding:9px 16px;border-radius:10px;border:none;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;background:#1565C0;color:#fff;transition:.2s}
-.logs-export-btn:hover{background:#0D47A1}
+.logs-action-btn{padding:9px 16px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:.2s;border:1.5px solid #D8EDEA}
+.logs-refresh{background:#fff;color:#3949AB}.logs-refresh:hover{background:#E8EAF6}
+.logs-export{background:#1565C0;color:#fff;border:none}.logs-export:hover{background:#0D47A1}
 #logsBody{overflow-y:auto;flex:1}
-#logsFoot{padding:10px 20px;border-top:1px solid #E0EFED;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:#9BB5B0}
+#logsFoot{padding:10px 20px;border-top:1px solid #E0EFED;display:flex;justify-content:space-between;font-size:.75rem;color:#9BB5B0}
 .logs-table{width:100%;border-collapse:collapse;direction:rtl;font-size:.82rem}
 .logs-table thead tr{background:linear-gradient(120deg,#1A237E,#283593);position:sticky;top:0;z-index:1}
 .logs-table thead th{padding:11px 14px;color:#fff;font-weight:700;text-align:right;font-size:.78rem;white-space:nowrap}
@@ -308,20 +306,12 @@ header .spacer { flex: 1; }
 .logs-table tbody tr:hover{background:#E8EAF6}
 .logs-table td{padding:10px 14px;color:#1A2E2B;border-bottom:1px solid #EEEEEE;vertical-align:middle}
 .log-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
-.log-add{background:#E8F5E9;color:#2E7D32}
-.log-update{background:#FFF8E1;color:#F57F17}
-.log-export{background:#E3F2FD;color:#1565C0}
-.log-login{background:#F3E5F5;color:#6A1B9A}
+.log-add{background:#E8F5E9;color:#2E7D32}.log-update{background:#FFF8E1;color:#F57F17}
+.log-export{background:#E3F2FD;color:#1565C0}.log-login{background:#F3E5F5;color:#6A1B9A}
 .logs-empty{padding:60px;text-align:center;color:#9BB5B0;font-size:.9rem}
-/* ===== تصدير Excel / طباعة ===== */
-.export-excel-btn{background:linear-gradient(135deg,#1B5E20,#2E7D32);color:#fff;box-shadow:0 4px 14px rgba(27,94,32,.25)}
-.export-excel-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(27,94,32,.35)}
-/* ===== حذف طالب ===== */
 .btn-danger{background:linear-gradient(135deg,#B71C1C,#7F0000);color:#fff;box-shadow:0 4px 14px rgba(183,28,28,.25)}
 .btn-danger:hover{transform:translateY(-1px)}
 #confirmDeleteModal{position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center}
-/* ===== تسجيل خروج تلقائي ===== */
-#sessionWarning{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#F57F17;color:#fff;padding:12px 24px;border-radius:50px;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.2);z-index:9999;display:none;align-items:center;gap:10px}
 </style>
 </head>
 
@@ -374,7 +364,7 @@ header .spacer { flex: 1; }
           <span id="stCount">جارِ التحميل...</span>
         </div>
         <button id="stClose" onclick="document.getElementById('stOverlay').classList.remove('open')">✕</button>
-        <button onclick="exportStudentsExcel()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700">📥 Excel</button>
+        <button onclick="exportStudentsCSV()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700">📥 Excel</button>
       </div>
       <div id="stSearch">
         <input type="text" id="stSearchInput" placeholder="🔍 ابحث بالاسم أو رقم الطالب..." oninput="filterStudents()" dir="rtl">
@@ -393,59 +383,44 @@ header .spacer { flex: 1; }
   <button id="logsBtn" onclick="openLogs()">📋 سجل العمليات</button>
   <div class="header-badge">🏛️ جامعة الكوفة</div>
 
-  <!-- نافذة تحذير انتهاء الجلسة -->
-  <div id="sessionWarning">⚠️ ستنتهي جلستك خلال دقيقة — <button onclick="resetSession()" style="background:rgba(255,255,255,.3);border:none;color:#fff;padding:4px 12px;border-radius:20px;cursor:pointer;font-family:Cairo,sans-serif;font-weight:700">تجديد</button></div>
-
-  <!-- ===== نافذة سجل العمليات ===== -->
   <div id="logsOverlay" onclick="closeLogs(event)">
     <div id="logsModal">
       <div id="logsHead">
         <div>
-          <h3>📋 سجل العمليات — Activity Log</h3>
-          <span id="logsSubtitle" style="font-size:.78rem;opacity:.8;margin-top:2px;display:block">جارِ التحميل...</span>
+          <h3>📋 سجل العمليات</h3>
+          <span id="logsSubtitle" style="font-size:.78rem;opacity:.8;display:block">جارِ التحميل...</span>
         </div>
         <button id="logsClose" onclick="document.getElementById('logsOverlay').classList.remove('open')">✕</button>
       </div>
       <div id="logsFilter">
-        <input type="text" id="logsSearchInput" placeholder="🔍 ابحث في السجل..." oninput="filterLogs()" dir="rtl">
+        <input type="text" id="logsSearchInput" placeholder="🔍 ابحث..." oninput="filterLogs()" dir="rtl">
         <select id="logsFilterType" onchange="filterLogs()">
           <option value="">كل العمليات</option>
-          <option value="تسجيل دخول">تسجيل دخول</option>
-          <option value="إضافة طالب">إضافة طالب</option>
-          <option value="تعديل بيانات">تعديل بيانات</option>
-          <option value="تصدير سيرة">تصدير سيرة</option>
-          <option value="تصدير محضر ماجستير">محضر ماجستير</option>
-          <option value="تصدير استمارة ماجستير">استمارة ماجستير</option>
-          <option value="تصدير محضر دكتوراه">محضر دكتوراه</option>
-          <option value="تصدير استمارة دكتوراه">استمارة دكتوراه</option>
+          <option value="إضافة">إضافة طالب</option>
+          <option value="تعديل">تعديل بيانات</option>
+          <option value="حذف">حذف طالب</option>
+          <option value="تصدير">تصدير</option>
         </select>
-        <button class="logs-refresh-btn" onclick="refreshLogs()">🔄 تحديث</button>
-        <button class="logs-export-btn" onclick="exportLogsExcel()">📥 تصدير Excel</button>
+        <button class="logs-action-btn logs-refresh" onclick="refreshLogs()">🔄 تحديث</button>
+        <button class="logs-action-btn logs-export" onclick="exportLogsCSV()">📥 Excel</button>
       </div>
       <div id="logsBody">
-        <div class="logs-empty" id="logsLoading">⏳ جارِ تحميل السجل...</div>
+        <div class="logs-empty" id="logsLoading">⏳ جارِ التحميل...</div>
         <table class="logs-table" id="logsTable" style="display:none">
-          <thead><tr>
-            <th>#</th><th>التاريخ والوقت</th><th>المستخدم</th>
-            <th>العملية</th><th>رقم الطالب</th><th>اسم الطالب</th><th>التفاصيل</th>
-          </tr></thead>
+          <thead><tr><th>#</th><th>التاريخ</th><th>المستخدم</th><th>العملية</th><th>رقم الطالب</th><th>اسم الطالب</th><th>التفاصيل</th></tr></thead>
           <tbody id="logsTbody"></tbody>
         </table>
       </div>
-      <div id="logsFoot">
-        <span>كلية التخطيط العمراني — جامعة الكوفة</span>
-        <span id="logsCount">—</span>
-      </div>
+      <div id="logsFoot"><span>كلية التخطيط العمراني</span><span id="logsCount">—</span></div>
     </div>
   </div>
 
-  <!-- ===== نافذة تأكيد الحذف ===== -->
   <div id="confirmDeleteModal" style="display:none">
     <div class="modal-overlay" onclick="closeDeleteModal()"></div>
     <div class="modal-box">
       <div class="modal-icon">🗑️</div>
       <h3 class="modal-title">تأكيد حذف الطالب</h3>
-      <p class="modal-msg">هل أنت متأكد من حذف بيانات الطالب<br><strong id="deleteStudentName"></strong> ؟<br><small style="color:#E53935">لا يمكن التراجع عن هذا الإجراء</small></p>
+      <p class="modal-msg">هل أنت متأكد من حذف بيانات الطالب<br><strong id="deleteStudentName"></strong>؟<br><small style="color:#E53935">لا يمكن التراجع عن هذا الإجراء</small></p>
       <div class="modal-actions">
         <button class="btn btn-danger" onclick="doDeleteStudent()">نعم، حذف</button>
         <button class="btn btn-ghost" onclick="closeDeleteModal()">إلغاء</button>
@@ -648,7 +623,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbxahYoqdQR5CAs03Es1ArgvRlJQjdX-lsD-r1hInL_x8DnR0wrff-M6DI63DP13DdSO/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwIUb9LYzW93UgrM563CN5GQn3VxMH88Dx6qFSdGLFpHeBW_dfI-GE_-uQR5OONwNvc/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -709,7 +684,6 @@ function xlogin() {
         overlay.style.opacity = '0';
         setTimeout(function(){ overlay.style.display = 'none'; }, 500);
         showToast('✅ مرحباً ' + d.username, 'success');
-        startSessionWatcher();
       } else {
         errEl.textContent = "⚠️ " + (d.error || "بيانات غير صحيحة");
         errEl.classList.add('show');
@@ -734,7 +708,6 @@ document.addEventListener('keydown', function(ev) {
 (function() {
   if (getToken()) {
     document.getElementById('xlo').style.display = 'none';
-    startSessionWatcher();
   }
 })();
 
@@ -1446,46 +1419,45 @@ function buildStatsUI(s){
 }
 
 // ============================================================
-// سجل العمليات — Logs
+// سجل العمليات
 // ============================================================
-var _logsData=[], _logsLoaded=false;
-function openLogs(){ document.getElementById('logsOverlay').classList.add('open'); if(!_logsLoaded) loadLogs(); }
-function closeLogs(e){ if(e.target===document.getElementById('logsOverlay')) document.getElementById('logsOverlay').classList.remove('open'); }
-function refreshLogs(){ _logsLoaded=false; _logsData=[]; loadLogs(); }
+var _logsData=[],_logsLoaded=false;
+function openLogs(){document.getElementById('logsOverlay').classList.add('open');if(!_logsLoaded)loadLogs();}
+function closeLogs(e){if(e.target===document.getElementById('logsOverlay'))document.getElementById('logsOverlay').classList.remove('open');}
+function refreshLogs(){_logsLoaded=false;_logsData=[];loadLogs();}
 function loadLogs(){
-  document.getElementById('logsLoading').innerHTML='⏳ جارِ تحميل السجل...';
+  document.getElementById('logsLoading').innerHTML='⏳ جارِ التحميل...';
   document.getElementById('logsLoading').style.display='block';
   document.getElementById('logsTable').style.display='none';
   fetch(API_URL+'?action=getLogs&token='+encodeURIComponent(getToken()))
     .then(function(r){return r.json();})
     .then(function(d){
-      if(d.logs!==undefined){ _logsLoaded=true; _logsData=d.logs; renderLogs(_logsData); }
-      else document.getElementById('logsLoading').innerHTML='❌ تعذر تحميل السجل';
-    })
-    .catch(function(){document.getElementById('logsLoading').innerHTML='❌ فشل الاتصال';});
+      if(d.logs!==undefined){_logsLoaded=true;_logsData=d.logs;renderLogs(_logsData);}
+      else document.getElementById('logsLoading').innerHTML='❌ تعذر التحميل';
+    }).catch(function(){document.getElementById('logsLoading').innerHTML='❌ فشل الاتصال';});
 }
-function getBadgeClass(op){
-  if(!op) return 'log-login';
-  if(op.includes('إضافة')) return 'log-add';
-  if(op.includes('تعديل')) return 'log-update';
-  if(op.includes('تصدير')) return 'log-export';
-  return 'log-login';
+function getBadge(op){
+  if(!op)return'log-login';
+  if(op.includes('إضافة'))return'log-add';
+  if(op.includes('تعديل'))return'log-update';
+  if(op.includes('تصدير'))return'log-export';
+  return'log-login';
 }
 function renderLogs(data){
-  var tbody=document.getElementById('logsTbody'); tbody.innerHTML='';
+  var tbody=document.getElementById('logsTbody');tbody.innerHTML='';
   if(!data.length){
-    document.getElementById('logsLoading').innerHTML='📭 لا توجد سجلات بعد';
+    document.getElementById('logsLoading').innerHTML='📭 لا توجد سجلات';
     document.getElementById('logsLoading').style.display='block';
     document.getElementById('logsTable').style.display='none';
-    document.getElementById('logsCount').textContent='0 سجل'; return;
+    document.getElementById('logsCount').textContent='0 سجل';return;
   }
-  data.forEach(function(row,idx){
+  data.forEach(function(row,i){
     var tr=document.createElement('tr');
     var op=(row[2]||'').toString();
-    tr.innerHTML='<td style="color:#9BB5B0;font-size:.75rem;text-align:center">'+(idx+1)+'</td>'+
+    tr.innerHTML='<td style="color:#9BB5B0;font-size:.75rem;text-align:center">'+(i+1)+'</td>'+
       '<td style="font-family:monospace;font-size:.78rem;color:#5C7A76;white-space:nowrap">'+escapeHtml((row[0]||'').toString())+'</td>'+
       '<td><strong>'+escapeHtml((row[1]||'').toString())+'</strong></td>'+
-      '<td><span class="log-badge '+getBadgeClass(op)+'">'+escapeHtml(op)+'</span></td>'+
+      '<td><span class="log-badge '+getBadge(op)+'">'+escapeHtml(op)+'</span></td>'+
       '<td style="font-family:monospace;color:#00695C;font-weight:700">'+escapeHtml((row[3]||'').toString())+'</td>'+
       '<td>'+escapeHtml((row[4]||'').toString())+'</td>'+
       '<td style="color:#9BB5B0;font-size:.78rem">'+escapeHtml((row[5]||'').toString())+'</td>';
@@ -1493,98 +1465,57 @@ function renderLogs(data){
   });
   document.getElementById('logsLoading').style.display='none';
   document.getElementById('logsTable').style.display='table';
-  document.getElementById('logsSubtitle').textContent='إجمالي السجلات: '+_logsData.length;
+  document.getElementById('logsSubtitle').textContent='إجمالي: '+_logsData.length;
   document.getElementById('logsCount').textContent='عرض: '+data.length+' / '+_logsData.length;
 }
 function filterLogs(){
   var q=document.getElementById('logsSearchInput').value.trim().toLowerCase();
-  var type=document.getElementById('logsFilterType').value.toLowerCase();
-  var filtered=_logsData.filter(function(row){
-    var mQ=!q||row.some(function(c){return(c||'').toString().toLowerCase().includes(q);});
-    var mT=!type||(row[2]||'').toString().toLowerCase().includes(type);
-    return mQ&&mT;
-  });
-  renderLogs(filtered);
+  var t=document.getElementById('logsFilterType').value.toLowerCase();
+  renderLogs(_logsData.filter(function(r){
+    return(!q||r.some(function(c){return(c||'').toString().toLowerCase().includes(q);}))&&
+           (!t||(r[2]||'').toString().toLowerCase().includes(t));
+  }));
 }
-function exportLogsExcel(){
-  if(!_logsData.length){ showToast('لا توجد سجلات للتصدير','error'); return; }
-  var header=['التاريخ والوقت','المستخدم','العملية','رقم الطالب','اسم الطالب','التفاصيل'];
-  var csv='﻿'+header.join(',')+'
+function exportLogsCSV(){
+  if(!_logsData.length){showToast('لا توجد سجلات','error');return;}
+  var csv='﻿'+'التاريخ,المستخدم,العملية,رقم الطالب,اسم الطالب,التفاصيل
 ';
-  _logsData.forEach(function(row){
-    csv+=row.map(function(c){ return '"'+(c||'').toString().replace(/"/g,'""')+'"'; }).join(',')+'
-';
-  });
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a'); a.href=url; a.download='logs_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click(); URL.revokeObjectURL(url);
-  showToast('تم تصدير السجل بنجاح ✓','success');
+  _logsData.forEach(function(r){csv+=r.map(function(c){return'"'+(c||'').toString().replace(/"/g,'""')+'"';}).join(',')+'
+';});
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='logs.csv';a.click();showToast('تم التصدير ✓','success');
 }
-
 // ============================================================
-// تصدير قائمة الطلاب Excel
+// تصدير قائمة الطلاب CSV
 // ============================================================
-function exportStudentsExcel(){
-  if(!_stData.length){ showToast('لا توجد بيانات','error'); return; }
-  var csv='﻿'+'الاسم الرباعي واللقب,رقم الطالب
+function exportStudentsCSV(){
+  if(!_stData.length){showToast('لا توجد بيانات','error');return;}
+  var csv='﻿'+'الاسم,رقم الطالب
 ';
-  _stData.forEach(function(s){ csv+='"'+(s.name||'')+'","'+(s.id||'')+'"
-'; });
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a'); a.href=url; a.download='students_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click(); URL.revokeObjectURL(url);
-  showToast('تم تصدير القائمة بنجاح ✓','success');
+  _stData.forEach(function(s){csv+='"'+(s.name||'')+'","'+(s.id||'')+'"
+';});
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='students.csv';a.click();showToast('تم التصدير ✓','success');
 }
-
 // ============================================================
 // حذف الطالب
 // ============================================================
-var _deleteRowIndex = null;
 function confirmDelete(){
-  var name = document.getElementById('الاسم الرباعي واللقب').value || 'الطالب';
-  document.getElementById('deleteStudentName').textContent = name;
-  document.getElementById('confirmDeleteModal').style.display = 'flex';
+  var name=document.getElementById('الاسم الرباعي واللقب').value||'الطالب';
+  document.getElementById('deleteStudentName').textContent=name;
+  document.getElementById('confirmDeleteModal').style.display='flex';
 }
-function closeDeleteModal(){ document.getElementById('confirmDeleteModal').style.display='none'; }
+function closeDeleteModal(){document.getElementById('confirmDeleteModal').style.display='none';}
 function doDeleteStudent(){
   closeDeleteModal();
-  if(!currentRowIndex){ showToast('خطأ: لا يوجد طالب محدد','error'); return; }
-  post('delete',{ rowIndex: currentRowIndex })
+  if(!currentRowIndex){showToast('لا يوجد طالب محدد','error');return;}
+  post('delete',{rowIndex:currentRowIndex})
     .then(function(d){
-      if(d && d.error){ showToast('خطأ: '+d.error,'error'); return; }
-      showToast('تم حذف الطالب بنجاح','success');
+      if(d&&d.error){showToast('خطأ: '+d.error,'error');return;}
+      showToast('تم الحذف بنجاح','success');
       _suggestCache.clear();
-      setTimeout(function(){ location.reload(); }, 1500);
-    })
-    .catch(function(){ showToast('تعذر الاتصال','error'); });
-}
-
-// ============================================================
-// تسجيل الخروج التلقائي — 30 دقيقة خمول
-// ============================================================
-var _sessionTimer=null, _warnTimer=null;
-var SESSION_TIMEOUT = 30*60*1000;
-var WARN_BEFORE    = 60*1000;
-function resetSession(){
-  var sw = document.getElementById('sessionWarning');
-  if(sw) sw.style.display='none';
-  clearTimeout(_sessionTimer); clearTimeout(_warnTimer);
-  _warnTimer = setTimeout(function(){
-    var sw2 = document.getElementById('sessionWarning');
-    if(sw2) sw2.style.display='flex';
-    _sessionTimer = setTimeout(function(){
-      clearSession(); showToast('انتهت الجلسة تلقائياً','error');
-      setTimeout(function(){ location.reload(); }, 2000);
-    }, WARN_BEFORE);
-  }, SESSION_TIMEOUT - WARN_BEFORE);
-}
-// تُشغَّل إدارة الجلسة فقط بعد تسجيل الدخول
-function startSessionWatcher(){
-  document.addEventListener('click', resetSession);
-  document.addEventListener('keydown', resetSession);
-  resetSession();
+      setTimeout(function(){location.reload();},1500);
+    }).catch(function(){showToast('تعذر الاتصال','error');});
 }
 
 function filterStudents(){
