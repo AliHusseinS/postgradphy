@@ -709,6 +709,7 @@ function xlogin() {
         overlay.style.opacity = '0';
         setTimeout(function(){ overlay.style.display = 'none'; }, 500);
         showToast('✅ مرحباً ' + d.username, 'success');
+        startSessionWatcher();
       } else {
         errEl.textContent = "⚠️ " + (d.error || "بيانات غير صحيحة");
         errEl.classList.add('show');
@@ -733,6 +734,7 @@ document.addEventListener('keydown', function(ev) {
 (function() {
   if (getToken()) {
     document.getElementById('xlo').style.display = 'none';
+    startSessionWatcher();
   }
 })();
 
@@ -1576,9 +1578,12 @@ function resetSession(){
     }, WARN_BEFORE);
   }, SESSION_TIMEOUT - WARN_BEFORE);
 }
-document.addEventListener('click', resetSession);
-document.addEventListener('keydown', resetSession);
-resetSession();
+// تُشغَّل إدارة الجلسة فقط بعد تسجيل الدخول
+function startSessionWatcher(){
+  document.addEventListener('click', resetSession);
+  document.addEventListener('keydown', resetSession);
+  resetSession();
+}
 
 function filterStudents(){
   var q = document.getElementById('stSearchInput').value.trim().toLowerCase();
