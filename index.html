@@ -419,11 +419,11 @@ header .spacer { flex: 1; }
   <div id="confirmDeleteModal" style="display:none">
     <div class="modal-overlay" onclick="closeDeleteModal()"></div>
     <div class="modal-box">
-      <div class="modal-icon">🗑️</div>
-      <h3 class="modal-title">تأكيد حذف الطالب</h3>
-      <p class="modal-msg">هل أنت متأكد من حذف بيانات الطالب<br><strong id="deleteStudentName"></strong>؟<br><small style="color:#E53935">لا يمكن التراجع عن هذا الإجراء</small></p>
+      <div class="modal-icon">🗄️</div>
+      <h3 class="modal-title">أرشفة بيانات الطالب</h3>
+      <p class="modal-msg">هل تريد أرشفة بيانات الطالب<br><strong id="deleteStudentName"></strong>؟<br><small style="color:#F57F17">سيتم نقل البيانات إلى الأرشيف — يمكن استعادتها لاحقاً</small></p>
       <div class="modal-actions">
-        <button class="btn btn-danger" onclick="doDeleteStudent()">نعم، حذف</button>
+        <button class="btn btn-danger" onclick="doDeleteStudent()">نعم، أرشفة</button>
         <button class="btn btn-ghost" onclick="closeDeleteModal()">إلغاء</button>
       </div>
     </div>
@@ -485,8 +485,8 @@ header .spacer { flex: 1; }
     حفظ التعديلات
   </button>
   <button id="deleteBtn" class="btn btn-danger" onclick="confirmDelete()" style="display:none">
-    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
-    حذف الطالب
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8"/></svg>
+    أرشفة الطالب
   </button>
   <button id="cancelBtn" class="btn btn-ghost" onclick="cancelEdit()" style="display:none">
     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -624,7 +624,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbx2w1aABMLq_8xQBBsWu-0Pd-7JBim1XO7szIolKDP0uHjt47Ahq4Q-FJrHU3_CctRm/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzGlLpA810AV843Pp2vh5Yo2RLQ5VFI7m8oqxQeKHUAH9KgSvGaog9TB3BYAi56b1LH/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -974,6 +974,7 @@ function doLoadStudent(d){
     document.getElementById("exportBtn").style.display = "inline-flex";   // ✅ زر السيرة — كما كان
     document.getElementById("masterDropWrap").style.display = "inline-flex";
     document.getElementById("doctorDropWrap").style.display = "inline-flex"; // ✅ زر ماستر — جديد
+    document.getElementById("deleteBtn").style.display = "inline-flex";
     document.getElementById("editNotice").style.display = "flex";
     showToast("✅ تم تحميل بيانات الطالب", "success");
   }
@@ -1582,7 +1583,7 @@ function doDeleteStudent() {
   post("delete", { rowIndex: currentRowIndex })
     .then(function(d) {
       if (d && d.error) { showToast("خطأ: " + d.error, "error"); return; }
-      showToast("تم الحذف بنجاح", "success");
+      showToast("تم أرشفة الطالب بنجاح 🗄️", "success");
       _suggestCache.clear();
       setTimeout(function() { location.reload(); }, 1500);
     })
