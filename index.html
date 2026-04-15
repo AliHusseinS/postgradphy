@@ -252,13 +252,19 @@ header .spacer { flex: 1; }
 .bar-track{flex:1;background:#E0EFED;border-radius:20px;height:22px;overflow:hidden}
 .bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#00695C,#00897B);display:flex;align-items:center;justify-content:flex-end;padding-left:8px}
 .bar-fill span{color:#fff;font-size:.7rem;font-weight:700}
-.stats-year-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:20px}
-.stats-year-card{background:#fff;border-radius:12px;border:1.5px solid #E0EFED;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,77,64,.06)}
-.stats-year-card .sy-year{font-size:.9rem;font-weight:800;color:#004D40;margin-bottom:6px}
-.stats-year-card .sy-row{display:flex;justify-content:center;gap:8px;font-size:.75rem}
-.stats-year-card .sy-m{color:#1565C0;font-weight:700}
-.stats-year-card .sy-d{color:#B71C1C;font-weight:700}
-.stats-year-card .sy-t{color:#00695C;font-weight:900;font-size:1rem;margin-top:4px}
+.stats-year-wrap{margin-bottom:20px}
+.stats-year-table{width:100%;border-collapse:collapse;direction:rtl;font-size:.83rem;border-radius:14px;overflow:hidden}
+.stats-year-table thead tr{background:linear-gradient(120deg,#004D40,#00695C)}
+.stats-year-table thead th{padding:10px 14px;color:#fff;font-weight:700;text-align:center;font-size:.78rem}
+.stats-year-table tbody tr:nth-child(even){background:#F5FAFA}
+.stats-year-table tbody tr:hover{background:#E8F5E9}
+.stats-year-table td{padding:9px 14px;text-align:center;border-bottom:1px solid #E0EFED;color:#1A2E2B}
+.stats-year-table td:first-child{font-weight:800;color:#004D40;background:#F0FAF8}
+.stats-year-table tfoot td{background:#E8F5E9;font-weight:800;color:#004D40;border-top:2px solid #B2DFDB}
+.syt-m{color:#1565C0;font-weight:700}
+.syt-d{color:#B71C1C;font-weight:700}
+.syt-dp{color:#6A1B9A;font-weight:700}
+.syt-t{color:#004D40;font-weight:900}
 #stOverlay{position:fixed;inset:0;z-index:8888;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center}
 #stOverlay.open{display:flex}
 #stModal{background:#fff;border-radius:20px;width:680px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:stIn .3s cubic-bezier(.34,1.56,.64,1)}
@@ -624,7 +630,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbxY9nW80dD0pEs710NUqICKmYCvQaVmFJZSROOxbU16_AFUoNQ28QIWmzRMjeAE9NSq/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxbgMeif8UCPNN__Bzd4hC-PsFGRvQf6bG4MnukSLSJKb6bWAHoBrf_SAuY8LmDRllE/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -1368,7 +1374,10 @@ function buildStatsUI(s){
   html+='<div class="stats-cards">';
   html+='<div class="stats-card"><div class="sc-num">'+s.total+'</div><div class="sc-lbl">إجمالي الطلاب</div></div>';
   html+='<div class="stats-card"><div class="sc-num" style="color:#1565C0">'+s.master+'</div><div class="sc-lbl">طلاب ماجستير</div></div>';
-  html+='<div class="stats-card"><div class="sc-num" style="color:#B71C1C">'+s.doctor+'</div><div class="sc-lbl">طلاب دكتوراه</div></div>';
+  html+='<div class="stats-card"><div class="sc-num" style="color:#B71C1C">'+(s.doctor||0)+'</div><div class="sc-lbl">طلاب دكتوراه</div></div>';
+  if(s.diploma && s.diploma > 0){
+    html+='<div class="stats-card"><div class="sc-num" style="color:#6A1B9A">'+s.diploma+'</div><div class="sc-lbl">دبلوم عالٍ</div></div>';
+  }
   html+='</div>';
   html+='<div class="stats-table-wrap"><table class="stats-table"><thead><tr>';
   html+='<th>القسم</th><th>ماجستير ذكر</th><th>ماجستير أنثى</th><th>مجموع ماجستير</th><th>دكتوراه ذكر</th><th>دكتوراه أنثى</th><th>مجموع دكتوراه</th><th>الإجمالي</th>';
@@ -1397,20 +1406,37 @@ function buildStatsUI(s){
   });
   html+='</div>';
 
-  // ===== بوكس تصنيف حسب سنة القبول =====
+  // ===== تصنيف حسب سنة القبول =====
   if(s.years && s.years.length > 0){
+    html+='<div class="stats-year-wrap">';
     html+='<div class="stats-chart-title" style="margin-bottom:12px">🎓 تصنيف الطلاب حسب سنة القبول</div>';
-    html+='<div class="stats-year-grid">';
+    html+='<div class="stats-table-wrap"><table class="stats-year-table">';
+    html+='<thead><tr>';
+    html+='<th>سنة القبول</th>';
+    html+='<th>ماجستير</th>';
+    html+='<th>دكتوراه</th>';
+    html+='<th>دبلوم عالٍ</th>';
+    html+='<th>الإجمالي</th>';
+    html+='</tr></thead><tbody>';
+    var totM=0, totD=0, totDp=0;
     s.years.forEach(function(y){
-      var t=(y.master||0)+(y.doctor||0);
-      html+='<div class="stats-year-card">';
-      html+='<div class="sy-year">'+y.year+'</div>';
-      html+='<div class="sy-t">'+t+'</div>';
-      html+='<div class="sy-row">';
-      html+='<span class="sy-m">م: '+(y.master||0)+'</span>';
-      html+='<span class="sy-d">د: '+(y.doctor||0)+'</span>';
-      html+='</div></div>';
+      var m=(y.master||0), d=(y.doctor||0), dp=(y.diploma||0), t=m+d+dp;
+      totM+=m; totD+=d; totDp+=dp;
+      html+='<tr>';
+      html+='<td>'+escapeHtml(y.year.toString())+'</td>';
+      html+='<td class="syt-m">'+(m>0?m:'—')+'</td>';
+      html+='<td class="syt-d">'+(d>0?d:'—')+'</td>';
+      html+='<td class="syt-dp">'+(dp>0?dp:'—')+'</td>';
+      html+='<td class="syt-t">'+t+'</td>';
+      html+='</tr>';
     });
+    html+='</tbody><tfoot><tr>';
+    html+='<td>المجموع</td>';
+    html+='<td class="syt-m">'+totM+'</td>';
+    html+='<td class="syt-d">'+totD+'</td>';
+    html+='<td class="syt-dp">'+totDp+'</td>';
+    html+='<td class="syt-t">'+(totM+totD+totDp)+'</td>';
+    html+='</tr></tfoot></table></div>';
     html+='</div>';
   }
 
