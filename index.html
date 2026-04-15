@@ -296,7 +296,8 @@ header .spacer { flex: 1; }
 #logsFilter select{padding:9px 12px;border-radius:10px;border:1.5px solid #D8EDEA;font-family:'Cairo',sans-serif;font-size:.85rem;outline:none;background:#F5FAFA;cursor:pointer}
 .logs-action-btn{padding:9px 16px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:.2s;border:1.5px solid #D8EDEA}
 .logs-refresh{background:#fff;color:#3949AB}.logs-refresh:hover{background:#E8EAF6}
-.logs-export{background:#1565C0;color:#fff;border:none}.logs-export:hover{background:#0D47A1}
+.logs-export-btn{background:#1565C0;color:#fff;border:none;padding:9px 16px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer}
+.logs-export-btn:hover{background:#0D47A1}
 #logsBody{overflow-y:auto;flex:1}
 #logsFoot{padding:10px 20px;border-top:1px solid #E0EFED;display:flex;justify-content:space-between;font-size:.75rem;color:#9BB5B0}
 .logs-table{width:100%;border-collapse:collapse;direction:rtl;font-size:.82rem}
@@ -307,7 +308,7 @@ header .spacer { flex: 1; }
 .logs-table td{padding:10px 14px;color:#1A2E2B;border-bottom:1px solid #EEEEEE;vertical-align:middle}
 .log-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
 .log-add{background:#E8F5E9;color:#2E7D32}.log-update{background:#FFF8E1;color:#F57F17}
-.log-export{background:#E3F2FD;color:#1565C0}.log-login{background:#F3E5F5;color:#6A1B9A}
+.log-exportbadge{background:#E3F2FD;color:#1565C0}.log-login{background:#F3E5F5;color:#6A1B9A}
 .logs-empty{padding:60px;text-align:center;color:#9BB5B0;font-size:.9rem}
 .btn-danger{background:linear-gradient(135deg,#B71C1C,#7F0000);color:#fff;box-shadow:0 4px 14px rgba(183,28,28,.25)}
 .btn-danger:hover{transform:translateY(-1px)}
@@ -364,7 +365,7 @@ header .spacer { flex: 1; }
           <span id="stCount">جارِ التحميل...</span>
         </div>
         <button id="stClose" onclick="document.getElementById('stOverlay').classList.remove('open')">✕</button>
-        <button onclick="exportStudentsCSV()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700">📥 Excel</button>
+        <button onclick="exportStudentsCSV()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:Cairo,sans-serif;font-size:.78rem;font-weight:700">📥 Excel</button>
       </div>
       <div id="stSearch">
         <input type="text" id="stSearchInput" placeholder="🔍 ابحث بالاسم أو رقم الطالب..." oninput="filterStudents()" dir="rtl">
@@ -396,13 +397,13 @@ header .spacer { flex: 1; }
         <input type="text" id="logsSearchInput" placeholder="🔍 ابحث..." oninput="filterLogs()" dir="rtl">
         <select id="logsFilterType" onchange="filterLogs()">
           <option value="">كل العمليات</option>
-          <option value="إضافة">إضافة طالب</option>
+          <option value="اضافة">إضافة طالب</option>
           <option value="تعديل">تعديل بيانات</option>
           <option value="حذف">حذف طالب</option>
           <option value="تصدير">تصدير</option>
         </select>
         <button class="logs-action-btn logs-refresh" onclick="refreshLogs()">🔄 تحديث</button>
-        <button class="logs-action-btn logs-export" onclick="exportLogsCSV()">📥 Excel</button>
+        <button class="logs-export-btn" onclick="exportLogsCSV()">📥 Excel</button>
       </div>
       <div id="logsBody">
         <div class="logs-empty" id="logsLoading">⏳ جارِ التحميل...</div>
@@ -623,7 +624,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbx2w1aABMLq_8xQBBsWu-0Pd-7JBim1XO7szIolKDP0uHjt47Ahq4Q-FJrHU3_CctRm/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx0xfs-rfMMOvbR9oMKwiNj7GsvjJ9h0c1E1wh5NBmPXdwNcld0DbsafRRzuPZUB5i-xg/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -1418,106 +1419,6 @@ function buildStatsUI(s){
   document.getElementById('statsSubtitle').textContent='إجمالي الطلاب: '+s.total;
 }
 
-// ============================================================
-// سجل العمليات
-// ============================================================
-var _logsData=[],_logsLoaded=false;
-function openLogs(){document.getElementById('logsOverlay').classList.add('open');if(!_logsLoaded)loadLogs();}
-function closeLogs(e){if(e.target===document.getElementById('logsOverlay'))document.getElementById('logsOverlay').classList.remove('open');}
-function refreshLogs(){_logsLoaded=false;_logsData=[];loadLogs();}
-function loadLogs(){
-  document.getElementById('logsLoading').innerHTML='⏳ جارِ التحميل...';
-  document.getElementById('logsLoading').style.display='block';
-  document.getElementById('logsTable').style.display='none';
-  fetch(API_URL+'?action=getLogs&token='+encodeURIComponent(getToken()))
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.logs!==undefined){_logsLoaded=true;_logsData=d.logs;renderLogs(_logsData);}
-      else document.getElementById('logsLoading').innerHTML='❌ تعذر التحميل';
-    }).catch(function(){document.getElementById('logsLoading').innerHTML='❌ فشل الاتصال';});
-}
-function getBadge(op){
-  if(!op)return'log-login';
-  if(op.includes('إضافة'))return'log-add';
-  if(op.includes('تعديل'))return'log-update';
-  if(op.includes('تصدير'))return'log-export';
-  return'log-login';
-}
-function renderLogs(data){
-  var tbody=document.getElementById('logsTbody');tbody.innerHTML='';
-  if(!data.length){
-    document.getElementById('logsLoading').innerHTML='📭 لا توجد سجلات';
-    document.getElementById('logsLoading').style.display='block';
-    document.getElementById('logsTable').style.display='none';
-    document.getElementById('logsCount').textContent='0 سجل';return;
-  }
-  data.forEach(function(row,i){
-    var tr=document.createElement('tr');
-    var op=(row[2]||'').toString();
-    tr.innerHTML='<td style="color:#9BB5B0;font-size:.75rem;text-align:center">'+(i+1)+'</td>'+
-      '<td style="font-family:monospace;font-size:.78rem;color:#5C7A76;white-space:nowrap">'+escapeHtml((row[0]||'').toString())+'</td>'+
-      '<td><strong>'+escapeHtml((row[1]||'').toString())+'</strong></td>'+
-      '<td><span class="log-badge '+getBadge(op)+'">'+escapeHtml(op)+'</span></td>'+
-      '<td style="font-family:monospace;color:#00695C;font-weight:700">'+escapeHtml((row[3]||'').toString())+'</td>'+
-      '<td>'+escapeHtml((row[4]||'').toString())+'</td>'+
-      '<td style="color:#9BB5B0;font-size:.78rem">'+escapeHtml((row[5]||'').toString())+'</td>';
-    tbody.appendChild(tr);
-  });
-  document.getElementById('logsLoading').style.display='none';
-  document.getElementById('logsTable').style.display='table';
-  document.getElementById('logsSubtitle').textContent='إجمالي: '+_logsData.length;
-  document.getElementById('logsCount').textContent='عرض: '+data.length+' / '+_logsData.length;
-}
-function filterLogs(){
-  var q=document.getElementById('logsSearchInput').value.trim().toLowerCase();
-  var t=document.getElementById('logsFilterType').value.toLowerCase();
-  renderLogs(_logsData.filter(function(r){
-    return(!q||r.some(function(c){return(c||'').toString().toLowerCase().includes(q);}))&&
-           (!t||(r[2]||'').toString().toLowerCase().includes(t));
-  }));
-}
-function exportLogsCSV(){
-  if(!_logsData.length){showToast('لا توجد سجلات','error');return;}
-  var csv='﻿'+'التاريخ,المستخدم,العملية,رقم الطالب,اسم الطالب,التفاصيل
-';
-  _logsData.forEach(function(r){csv+=r.map(function(c){return'"'+(c||'').toString().replace(/"/g,'""')+'"';}).join(',')+'
-';});
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='logs.csv';a.click();showToast('تم التصدير ✓','success');
-}
-// ============================================================
-// تصدير قائمة الطلاب CSV
-// ============================================================
-function exportStudentsCSV(){
-  if(!_stData.length){showToast('لا توجد بيانات','error');return;}
-  var csv='﻿'+'الاسم,رقم الطالب
-';
-  _stData.forEach(function(s){csv+='"'+(s.name||'')+'","'+(s.id||'')+'"
-';});
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='students.csv';a.click();showToast('تم التصدير ✓','success');
-}
-// ============================================================
-// حذف الطالب
-// ============================================================
-function confirmDelete(){
-  var name=document.getElementById('الاسم الرباعي واللقب').value||'الطالب';
-  document.getElementById('deleteStudentName').textContent=name;
-  document.getElementById('confirmDeleteModal').style.display='flex';
-}
-function closeDeleteModal(){document.getElementById('confirmDeleteModal').style.display='none';}
-function doDeleteStudent(){
-  closeDeleteModal();
-  if(!currentRowIndex){showToast('لا يوجد طالب محدد','error');return;}
-  post('delete',{rowIndex:currentRowIndex})
-    .then(function(d){
-      if(d&&d.error){showToast('خطأ: '+d.error,'error');return;}
-      showToast('تم الحذف بنجاح','success');
-      _suggestCache.clear();
-      setTimeout(function(){location.reload();},1500);
-    }).catch(function(){showToast('تعذر الاتصال','error');});
-}
-
 function filterStudents(){
   var q = document.getElementById('stSearchInput').value.trim().toLowerCase();
   if(!q){ renderStudents(_stData); return; }
@@ -1527,6 +1428,167 @@ function filterStudents(){
   renderStudents(filtered);
   document.getElementById('stCount').textContent = 'نتائج البحث: ' + filtered.length;
 }
+
+// ============================================================
+// سجل العمليات
+// ============================================================
+var _logsData = [];
+var _logsLoaded = false;
+
+function openLogs() {
+  document.getElementById("logsOverlay").classList.add("open");
+  if (!_logsLoaded) loadLogs();
+}
+
+function closeLogs(e) {
+  if (e.target === document.getElementById("logsOverlay"))
+    document.getElementById("logsOverlay").classList.remove("open");
+}
+
+function refreshLogs() {
+  _logsLoaded = false;
+  _logsData = [];
+  loadLogs();
+}
+
+function loadLogs() {
+  document.getElementById("logsLoading").innerHTML = "⏳ جارِ التحميل...";
+  document.getElementById("logsLoading").style.display = "block";
+  document.getElementById("logsTable").style.display = "none";
+  fetch(API_URL + "?action=getLogs&token=" + encodeURIComponent(getToken()))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.logs !== undefined) {
+        _logsLoaded = true;
+        _logsData = d.logs;
+        renderLogs(_logsData);
+      } else {
+        document.getElementById("logsLoading").innerHTML = "❌ تعذر التحميل";
+      }
+    })
+    .catch(function() {
+      document.getElementById("logsLoading").innerHTML = "❌ فشل الاتصال";
+    });
+}
+
+function getBadge(op) {
+  if (!op) return "log-login";
+  if (op.indexOf("اضافة") !== -1 || op.indexOf("إضافة") !== -1) return "log-add";
+  if (op.indexOf("تعديل") !== -1) return "log-update";
+  if (op.indexOf("تصدير") !== -1) return "log-exportbadge";
+  return "log-login";
+}
+
+function renderLogs(data) {
+  var tbody = document.getElementById("logsTbody");
+  tbody.innerHTML = "";
+  if (!data.length) {
+    document.getElementById("logsLoading").innerHTML = "📭 لا توجد سجلات";
+    document.getElementById("logsLoading").style.display = "block";
+    document.getElementById("logsTable").style.display = "none";
+    document.getElementById("logsCount").textContent = "0 سجل";
+    return;
+  }
+  for (var i = 0; i < data.length; i++) {
+    var row = data[i];
+    var tr = document.createElement("tr");
+    var op = (row[2] || "").toString();
+    var badgeClass = getBadge(op);
+    tr.innerHTML =
+      "<td style='color:#9BB5B0;font-size:.75rem;text-align:center'>" + (i + 1) + "</td>" +
+      "<td style='font-family:monospace;font-size:.78rem;color:#5C7A76;white-space:nowrap'>" + escapeHtml((row[0] || "").toString()) + "</td>" +
+      "<td><strong>" + escapeHtml((row[1] || "").toString()) + "</strong></td>" +
+      "<td><span class='log-badge " + badgeClass + "'>" + escapeHtml(op) + "</span></td>" +
+      "<td style='font-family:monospace;color:#00695C;font-weight:700'>" + escapeHtml((row[3] || "").toString()) + "</td>" +
+      "<td>" + escapeHtml((row[4] || "").toString()) + "</td>" +
+      "<td style='color:#9BB5B0;font-size:.78rem'>" + escapeHtml((row[5] || "").toString()) + "</td>";
+    tbody.appendChild(tr);
+  }
+  document.getElementById("logsLoading").style.display = "none";
+  document.getElementById("logsTable").style.display = "table";
+  document.getElementById("logsSubtitle").textContent = "إجمالي: " + _logsData.length;
+  document.getElementById("logsCount").textContent = "عرض: " + data.length + " / " + _logsData.length;
+}
+
+function filterLogs() {
+  var q = document.getElementById("logsSearchInput").value.trim().toLowerCase();
+  var t = document.getElementById("logsFilterType").value.toLowerCase();
+  var filtered = [];
+  for (var i = 0; i < _logsData.length; i++) {
+    var row = _logsData[i];
+    var matchQ = !q;
+    if (!matchQ) {
+      for (var j = 0; j < row.length; j++) {
+        if ((row[j] || "").toString().toLowerCase().indexOf(q) !== -1) { matchQ = true; break; }
+      }
+    }
+    var matchT = !t || (row[2] || "").toString().toLowerCase().indexOf(t) !== -1;
+    if (matchQ && matchT) filtered.push(row);
+  }
+  renderLogs(filtered);
+}
+
+function exportLogsCSV() {
+  if (!_logsData.length) { showToast("لا توجد سجلات", "error"); return; }
+  var csv = "\uFEFF" + "التاريخ,المستخدم,العملية,رقم الطالب,اسم الطالب,التفاصيل\n";
+  for (var i = 0; i < _logsData.length; i++) {
+    var row = _logsData[i];
+    var cells = [];
+    for (var j = 0; j < row.length; j++) {
+      cells.push('"' + (row[j] || "").toString().replace(/"/g, '""') + '"');
+    }
+    csv += cells.join(",") + "\n";
+  }
+  var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "logs.csv";
+  a.click();
+  showToast("تم التصدير ✓", "success");
+}
+
+// ============================================================
+// تصدير قائمة الطلاب CSV
+// ============================================================
+function exportStudentsCSV() {
+  if (!_stData.length) { showToast("لا توجد بيانات", "error"); return; }
+  var csv = "\uFEFF" + "الاسم,رقم الطالب\n";
+  for (var i = 0; i < _stData.length; i++) {
+    csv += '"' + (_stData[i].name || "") + '","' + (_stData[i].id || "") + '"\n';
+  }
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = "students.csv";
+  a.click();
+  showToast("تم التصدير ✓", "success");
+}
+
+// ============================================================
+// حذف الطالب
+// ============================================================
+function confirmDelete() {
+  var name = document.getElementById("الاسم الرباعي واللقب").value || "الطالب";
+  document.getElementById("deleteStudentName").textContent = name;
+  document.getElementById("confirmDeleteModal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+  document.getElementById("confirmDeleteModal").style.display = "none";
+}
+
+function doDeleteStudent() {
+  closeDeleteModal();
+  if (!currentRowIndex) { showToast("لا يوجد طالب محدد", "error"); return; }
+  post("delete", { rowIndex: currentRowIndex })
+    .then(function(d) {
+      if (d && d.error) { showToast("خطأ: " + d.error, "error"); return; }
+      showToast("تم الحذف بنجاح", "success");
+      _suggestCache.clear();
+      setTimeout(function() { location.reload(); }, 1500);
+    })
+    .catch(function() { showToast("تعذر الاتصال", "error"); });
+}
+
 </script>
 
 </body>
