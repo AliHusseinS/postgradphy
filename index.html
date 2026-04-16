@@ -1676,7 +1676,7 @@ function doDeleteStudent() {
 // ============================================================
 var _archiveData = [];
 var _archiveLoaded = false;
-window._userRole = 'editor';
+if (!window._userRole) window._userRole = 'editor';
 
 function openArchive() {
   document.getElementById("archiveOverlay").classList.add("open");
