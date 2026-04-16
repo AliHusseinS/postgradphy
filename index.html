@@ -326,7 +326,7 @@ header .spacer { flex: 1; }
 #archiveOverlay{position:fixed;inset:0;z-index:8899;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center}
 #archiveOverlay.open{display:flex}
 #archiveModal{background:#fff;border-radius:20px;width:860px;max-width:97vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:stIn .3s cubic-bezier(.34,1.56,.64,1)}
-#archiveHead{background:linear-gradient(120deg,#E65100,#BF360C,#FF6D00);color:#fff;padding:18px 24px;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between}
+#archiveHead{background:linear-gradient(120deg,#E65100,#BF360C);color:#fff;padding:18px 24px;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between}
 #archiveHead h3{font-size:1rem;font-weight:800;margin:0}
 #archiveClose{background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
 #archiveSearch{padding:12px 20px;border-bottom:1px solid #E0EFED}
@@ -413,7 +413,6 @@ header .spacer { flex: 1; }
   <button id="archiveBtn" onclick="openArchive()">🗄️ الأرشيف</button>
   <button id="logsBtn" onclick="openLogs()">📋 سجل العمليات</button>
 
-  <!-- نافذة الأرشيف -->
   <div id="archiveOverlay" onclick="closeArchive(event)">
     <div id="archiveModal">
       <div id="archiveHead">
@@ -681,7 +680,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbwpcV8ARfbu9XEOXuSoPFkcdI5_elMEYTc5LtLdJXnyoxvzPpxewhJWVve-nt0fAEaY/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxVtTGxduN-k8UgJCvppRgZnz31nlj8yDrhRB4z_byQCGn8vo95fsQQfmsqf9Nja7Y8/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -1501,93 +1500,6 @@ function buildStatsUI(s){
   document.getElementById('statsSubtitle').textContent='إجمالي الطلاب: '+s.total;
 }
 
-// ============================================================
-// الأرشيف
-// ============================================================
-var _archiveData = [];
-var _archiveLoaded = false;
-window._userRole = 'editor';
-
-function openArchive() {
-  document.getElementById("archiveOverlay").classList.add("open");
-  if (!_archiveLoaded) loadArchive();
-}
-
-function closeArchive(e) {
-  if (e.target === document.getElementById("archiveOverlay"))
-    document.getElementById("archiveOverlay").classList.remove("open");
-}
-
-function loadArchive() {
-  document.getElementById("archiveLoading").innerHTML = "⏳ جارِ التحميل...";
-  document.getElementById("archiveLoading").style.display = "block";
-  document.getElementById("archiveTable").style.display = "none";
-  fetch(API_URL + "?action=getArchive&token=" + encodeURIComponent(getToken()))
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.archive !== undefined) {
-        _archiveLoaded = true;
-        _archiveData = d.archive;
-        renderArchive(_archiveData);
-      } else {
-        document.getElementById("archiveLoading").innerHTML = "❌ تعذر التحميل";
-      }
-    })
-    .catch(function() { document.getElementById("archiveLoading").innerHTML = "❌ فشل الاتصال"; });
-}
-
-function renderArchive(data) {
-  var tbody = document.getElementById("archiveTbody");
-  tbody.innerHTML = "";
-  if (!data.length) {
-    document.getElementById("archiveLoading").innerHTML = "📭 لا يوجد طلاب مؤرشفون";
-    document.getElementById("archiveLoading").style.display = "block";
-    document.getElementById("archiveTable").style.display = "none";
-    document.getElementById("archiveSubtitle").textContent = "الأرشيف فارغ";
-    return;
-  }
-  for (var i = 0; i < data.length; i++) {
-    var s = data[i];
-    var tr = document.createElement("tr");
-    var restoreBtn = window._userRole === "admin"
-      ? "<button class='archive-restore-btn' onclick='restoreStudent(" + s.rowIndex + ","" + escapeHtml(s.id) + "")'>🔄 استعادة</button>"
-      : "<span style='color:#9BB5B0;font-size:.75rem'>—</span>";
-    tr.innerHTML =
-      "<td style='font-family:monospace;color:#E65100;font-weight:700'>" + escapeHtml(s.id) + "</td>" +
-      "<td>" + escapeHtml(s.name) + "</td>" +
-      "<td style='font-size:.78rem;color:#5C7A76'>" + escapeHtml(s.date) + "</td>" +
-      "<td style='font-size:.78rem;color:#5C7A76'>" + escapeHtml(s.by) + "</td>" +
-      "<td>" + restoreBtn + "</td>";
-    tbody.appendChild(tr);
-  }
-  document.getElementById("archiveLoading").style.display = "none";
-  document.getElementById("archiveTable").style.display = "table";
-  document.getElementById("archiveSubtitle").textContent = "إجمالي المؤرشفين: " + data.length;
-}
-
-function filterArchive() {
-  var q = document.getElementById("archiveSearchInput").value.trim().toLowerCase();
-  if (!q) { renderArchive(_archiveData); return; }
-  var filtered = _archiveData.filter(function(s) {
-    return (s.name||"").toLowerCase().indexOf(q) !== -1 || (s.id||"").toLowerCase().indexOf(q) !== -1;
-  });
-  renderArchive(filtered);
-}
-
-function restoreStudent(rowIndex, studentId) {
-  if (!confirm("هل تريد استعادة الطالب " + studentId + " من الأرشيف؟")) return;
-  fetch(API_URL + "?action=restore&rowIndex=" + rowIndex + "&token=" + encodeURIComponent(getToken()))
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.error) { showToast("خطأ: " + d.error, "error"); return; }
-      showToast("تم استعادة الطالب بنجاح ✓", "success");
-      _archiveLoaded = false;
-      _archiveData = [];
-      loadArchive();
-    })
-    .catch(function() { showToast("تعذر الاتصال", "error"); });
-}
-
 function filterStudents(){
   var q = document.getElementById('stSearchInput').value.trim().toLowerCase();
   if(!q){ renderStudents(_stData); return; }
@@ -1754,6 +1666,94 @@ function doDeleteStudent() {
       showToast("تم أرشفة الطالب بنجاح 🗄️", "success");
       _suggestCache.clear();
       setTimeout(function() { location.reload(); }, 1500);
+    })
+    .catch(function() { showToast("تعذر الاتصال", "error"); });
+}
+
+
+// ============================================================
+// الأرشيف
+// ============================================================
+var _archiveData = [];
+var _archiveLoaded = false;
+window._userRole = 'editor';
+
+function openArchive() {
+  document.getElementById("archiveOverlay").classList.add("open");
+  if (!_archiveLoaded) loadArchive();
+}
+
+function closeArchive(e) {
+  if (e.target === document.getElementById("archiveOverlay"))
+    document.getElementById("archiveOverlay").classList.remove("open");
+}
+
+function loadArchive() {
+  document.getElementById("archiveLoading").innerHTML = "⏳ جارِ التحميل...";
+  document.getElementById("archiveLoading").style.display = "block";
+  document.getElementById("archiveTable").style.display = "none";
+  fetch(API_URL + "?action=getArchive&token=" + encodeURIComponent(getToken()))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.archive !== undefined) {
+        _archiveLoaded = true;
+        _archiveData = d.archive;
+        renderArchive(_archiveData);
+      } else {
+        document.getElementById("archiveLoading").innerHTML = "❌ تعذر التحميل";
+      }
+    })
+    .catch(function() { document.getElementById("archiveLoading").innerHTML = "❌ فشل الاتصال"; });
+}
+
+function renderArchive(data) {
+  var tbody = document.getElementById("archiveTbody");
+  tbody.innerHTML = "";
+  if (!data.length) {
+    document.getElementById("archiveLoading").innerHTML = "📭 لا يوجد طلاب مؤرشفون";
+    document.getElementById("archiveLoading").style.display = "block";
+    document.getElementById("archiveTable").style.display = "none";
+    document.getElementById("archiveSubtitle").textContent = "الأرشيف فارغ";
+    return;
+  }
+  for (var i = 0; i < data.length; i++) {
+    var s = data[i];
+    var tr = document.createElement("tr");
+    var restoreBtn = window._userRole === "admin"
+      ? "<button class=\"archive-restore-btn\" onclick=\"restoreStudent(" + s.rowIndex + ",\'" + escapeHtml(s.id) + "\')\">🔄 استعادة</button>"
+      : "<span style=\"color:#9BB5B0;font-size:.75rem\">—</span>";
+    tr.innerHTML =
+      "<td style=\"font-family:monospace;color:#E65100;font-weight:700\">" + escapeHtml(s.id) + "</td>" +
+      "<td>" + escapeHtml(s.name) + "</td>" +
+      "<td style=\"font-size:.78rem;color:#5C7A76\">" + escapeHtml(s.date) + "</td>" +
+      "<td style=\"font-size:.78rem;color:#5C7A76\">" + escapeHtml(s.by) + "</td>" +
+      "<td>" + restoreBtn + "</td>";
+    tbody.appendChild(tr);
+  }
+  document.getElementById("archiveLoading").style.display = "none";
+  document.getElementById("archiveTable").style.display = "table";
+  document.getElementById("archiveSubtitle").textContent = "إجمالي المؤرشفين: " + data.length;
+}
+
+function filterArchive() {
+  var q = document.getElementById("archiveSearchInput").value.trim().toLowerCase();
+  if (!q) { renderArchive(_archiveData); return; }
+  var filtered = _archiveData.filter(function(s) {
+    return (s.name||"").toLowerCase().indexOf(q) !== -1 || (s.id||"").toLowerCase().indexOf(q) !== -1;
+  });
+  renderArchive(filtered);
+}
+
+function restoreStudent(rowIndex, studentId) {
+  if (!confirm("هل تريد استعادة الطالب " + studentId + " من الأرشيف؟")) return;
+  fetch(API_URL + "?action=restore&rowIndex=" + rowIndex + "&token=" + encodeURIComponent(getToken()))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) { showToast("خطأ: " + d.error, "error"); return; }
+      showToast("تم استعادة الطالب بنجاح ✓", "success");
+      _archiveLoaded = false;
+      _archiveData = [];
+      loadArchive();
     })
     .catch(function() { showToast("تعذر الاتصال", "error"); });
 }
