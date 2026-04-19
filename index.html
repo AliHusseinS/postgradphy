@@ -1587,7 +1587,6 @@ function loadLogs() {
 
 function formatLogDate(raw) {
   if (!raw) return "";
-  // إذا كان ISO format حوّله لصيغة مقروءة
   var s = raw.toString();
   if (s.indexOf("T") !== -1) {
     try {
@@ -1598,6 +1597,8 @@ function formatLogDate(raw) {
   }
   return s;
 }
+
+function getBadge(op) {
   if (!op) return "log-login";
   if (op.indexOf("اضافة") !== -1 || op.indexOf("إضافة") !== -1) return "log-add";
   if (op.indexOf("تعديل") !== -1) return "log-update";
