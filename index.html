@@ -359,6 +359,35 @@ header .spacer { flex: 1; }
 }
 #logoutBtn:hover{background:rgba(220,50,50,.45)}
 </style>
+<style>
+.st-badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
+.st-grad{background:#E8F5E9;color:#2E7D32}
+.st-cxl{background:#FFEBEE;color:#B71C1C}
+.st-delay{background:#FFF3E0;color:#E65100}
+.st-active{background:#E3F2FD;color:#1565C0}
+.st-edit-btn{background:#00695C;color:#fff;border:none;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:Cairo,sans-serif;font-size:.75rem;font-weight:700}
+.st-edit-btn:hover{background:#004D40}
+.st-type{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap;background:#EDE7F6;color:#4527A0}
+.st-type-unknown{background:#F5F5F5;color:#9E9E9E}
+#loadingOverlay{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center}
+#loadingOverlay.open{display:flex}
+#loadingBox{background:#fff;border-radius:20px;padding:40px 50px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);min-width:220px}
+.ld-spinner{width:52px;height:52px;border:5px solid #E0EFED;border-top-color:#00695C;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 18px}
+.ld-text{font-size:.95rem;font-weight:700;color:#004D40;margin:0}
+.ld-sub{font-size:.78rem;color:#9BB5B0;margin-top:6px}
+#confirmNiceModal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center}
+#confirmNiceModal.open{display:flex}
+#confirmNiceBox{background:#fff;border-radius:20px;padding:36px 40px;text-align:center;width:360px;max-width:92vw;box-shadow:0 24px 60px rgba(0,0,0,.25);animation:popIn .25s cubic-bezier(.34,1.56,.64,1)}
+.cn-icon{font-size:44px;margin-bottom:12px}
+.cn-title{font-size:1rem;font-weight:800;color:#004D40;margin-bottom:8px}
+.cn-msg{font-size:.85rem;color:#5C7A76;margin-bottom:22px;line-height:1.7}
+.cn-actions{display:flex;gap:10px;justify-content:center}
+.cn-ok{background:linear-gradient(135deg,#00695C,#004D40);color:#fff;border:none;padding:10px 28px;border-radius:50px;font-family:Cairo,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer}
+.cn-ok:hover{transform:translateY(-1px)}
+.cn-ok.danger{background:linear-gradient(135deg,#B71C1C,#7F0000)}
+.cn-cancel{background:#fff;color:#5C7A76;border:1.5px solid #E0EFED;padding:10px 22px;border-radius:50px;font-family:Cairo,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer}
+.cn-cancel:hover{border-color:#00695C;color:#00695C}
+</style>
 </head>
 
 <body>
@@ -419,7 +448,7 @@ header .spacer { flex: 1; }
       <div id="stBody">
         <div id="stLoading">⏳ جارِ تحميل البيانات...</div>
         <table id="stTable" style="display:none">
-          <thead><tr><th>الاسم الرباعي واللقب</th><th>رقم الطالب</th></tr></thead>
+          <thead><tr><th>الاسم الرباعي واللقب</th><th>رقم الطالب</th><th>نوع الدراسة</th><th>الحالة</th><th>تعديل</th></tr></thead>
           <tbody id="stTbody"></tbody>
         </table>
       </div>
@@ -520,13 +549,36 @@ header .spacer { flex: 1; }
           <h3>📊 إحصائيات منظومة الدراسات العليا</h3>
           <span id="statsSubtitle" style="font-size:.78rem;opacity:.8;margin-top:2px;display:block">جارِ التحميل...</span>
         </div>
-        <button id="statsClose" onclick="document.getElementById('statsOverlay').classList.remove('open')">✕</button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button onclick="exportStatsCSV()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:Cairo,sans-serif;font-size:.78rem;font-weight:700">📥 تنزيل Excel</button>
+          <button id="statsClose" onclick="document.getElementById('statsOverlay').classList.remove('open')">✕</button>
+        </div>
       </div>
       <div id="statsBody">
         <div class="stats-loading" id="statsLoading">⏳ جارِ تحميل الإحصائيات...</div>
         <div id="statsContent" style="display:none"></div>
       </div>
       <div id="statsFoot">كلية التخطيط العمراني — جامعة الكوفة</div>
+    </div>
+  </div>
+  <!-- نافذة التحميل -->
+  <div id="loadingOverlay">
+    <div id="loadingBox">
+      <div class="ld-spinner"></div>
+      <p class="ld-text" id="loadingText">جارِ تحميل بيانات الطالب...</p>
+      <p class="ld-sub">يرجى الانتظار</p>
+    </div>
+  </div>
+  <!-- نافذة تأكيد أنيقة -->
+  <div id="confirmNiceModal" onclick="closeConfirmNice(event)">
+    <div id="confirmNiceBox">
+      <div class="cn-icon" id="cnIcon">❓</div>
+      <div class="cn-title" id="cnTitle">تأكيد</div>
+      <div class="cn-msg" id="cnMsg"></div>
+      <div class="cn-actions">
+        <button class="cn-ok" id="cnOkBtn" onclick="cnOkCallback()">تأكيد</button>
+        <button class="cn-cancel" onclick="closeConfirmNice()">إلغاء</button>
+      </div>
     </div>
   </div>
 </header>
@@ -707,7 +759,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbwB_crDPYDOq4wMKj3HS82vaclWGIuXNqbrtc40U3rSc1LJUjL63ecNP7hiFkhw1E9r/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwXWPMEvI4820KPgrfncQ_WS137prd93EhcakObFlj9b52Sixi9ifSPMVRUq8anQo-o/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -1022,8 +1074,19 @@ function addStudent(){
   const row = ALL_COLUMNS.map(c => { const el = document.getElementById(c); return el ? el.value.trim() : ""; });
   post("add", { row })
     .then(d => {
-      if(d && d.error) showToast("❌ خطأ: " + d.error, "error");
-      else { showToast("✅ تمت إضافة الطالب بنجاح", "success"); _suggestCache.clear(); }
+      if(d && d.error) {
+        showToast("❌ خطأ: " + d.error, "error");
+      } else {
+        showToast("✅ تمت إضافة الطالب بنجاح", "success");
+        _suggestCache.clear();
+        // مسح النموذج كاملاً وجلب رقم جديد من السيرفر
+        ALL_COLUMNS.forEach(c => { const el = document.getElementById(c); if(el) el.value = ""; });
+        document.getElementById("searchBox").value = "";
+        fetch(API_URL)
+          .then(r => r.json())
+          .then(nd => { if(nd.nextId) document.getElementById("رقم الطالب").value = nd.nextId; })
+          .catch(() => {});
+      }
     })
     .catch(err => { if(err.message !== "session_expired") showToast("❌ تعذر الاتصال بالخادم", "error"); })
     .finally(() => { btn.innerHTML = origHTML; btn.disabled = false; });
@@ -1054,19 +1117,17 @@ function searchStudent(){
 }
 
 function doLoadStudent(d){
-  if(confirm("الطالب موجود، هل تريد تعديل بياناته؟")){
-    MODE = "EDIT"; currentRowIndex = d.rowIndex;
-    ALL_COLUMNS.forEach((c, i) => { const el = document.getElementById(c); if(el) el.value = d.row[i] || ""; });
-    document.getElementById("updateBtn").style.display = "inline-flex";
-    document.getElementById("cancelBtn").style.display = "inline-flex";
-    document.getElementById("addBtn").style.display = "none";
-    document.getElementById("exportBtn").style.display = "inline-flex";   // ✅ زر السيرة — كما كان
-    document.getElementById("masterDropWrap").style.display = "inline-flex";
-    document.getElementById("doctorDropWrap").style.display = "inline-flex"; // ✅ زر ماستر — جديد
-    if(window._userRole === "admin") document.getElementById("deleteBtn").style.display = "inline-flex";
-    document.getElementById("editNotice").style.display = "flex";
-    showToast("✅ تم تحميل بيانات الطالب", "success");
-  }
+  MODE = "EDIT"; currentRowIndex = d.rowIndex;
+  ALL_COLUMNS.forEach((c, i) => { const el = document.getElementById(c); if(el) el.value = d.row[i] || ""; });
+  document.getElementById("updateBtn").style.display = "inline-flex";
+  document.getElementById("cancelBtn").style.display = "inline-flex";
+  document.getElementById("addBtn").style.display = "none";
+  document.getElementById("exportBtn").style.display = "inline-flex";
+  document.getElementById("masterDropWrap").style.display = "inline-flex";
+  document.getElementById("doctorDropWrap").style.display = "inline-flex";
+  if(window._userRole === "admin") document.getElementById("deleteBtn").style.display = "inline-flex";
+  document.getElementById("editNotice").style.display = "flex";
+  showToast("✅ تم تحميل بيانات الطالب", "success");
 }
 
 // ============================================================
@@ -1093,8 +1154,9 @@ function saveUpdate(){
 }
 
 function cancelEdit(){
-  if(!confirm("هل تريد إلغاء التعديل؟")) return;
-  location.reload();
+  showConfirmNice("⚠️","إلغاء التعديل","هل تريد إلغاء التعديل وفقدان التغييرات؟",function(){
+    location.reload();
+  },"warning");
 }
 
 // ============================================================
@@ -1416,17 +1478,39 @@ function loadStudents(){
     .catch(function(){ document.getElementById('stLoading').innerHTML = '❌ فشل تحميل البيانات'; });
 }
 
+function getTypeLabel(t){
+  if(!t||t==="غير محدد") return "<span class=\"st-type st-type-unknown\">غير محدد</span>";
+  return "<span class=\"st-type\">" + escapeHtml(t) + "</span>";
+}
+function getStatusBadge(st){
+  if(st==="متخرج") return "<span class=\"st-badge st-grad\">&#x2705; متخرج</span>";
+  if(st==="مرقن")  return "<span class=\"st-badge st-cxl\">&#x1F534; مرقّن</span>";
+  if(st==="مؤجل")  return "<span class=\"st-badge st-delay\">&#x1F7E0; مؤجل</span>";
+  return "<span class=\"st-badge st-active\">&#x1F535; مستمر</span>";
+}
 function renderStudents(data){
-  var tbody = document.getElementById('stTbody');
-  tbody.innerHTML = '';
+  // ترتيب إجباري حسب الرقم التسلسلي
+  data = data.slice().sort(function(a,b){
+    var na = parseInt((a.id||"").replace("urbp-","")) || 0;
+    var nb = parseInt((b.id||"").replace("urbp-","")) || 0;
+    return na - nb;
+  });
+  var tbody = document.getElementById("stTbody");
+  tbody.innerHTML = "";
   data.forEach(function(s){
-    var tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + escapeHtml(s.name || '') + '</td><td><span class="stNum">' + escapeHtml(s.id || '—') + '</span></td>';
+    var tr = document.createElement("tr");
+    var ri = s.rowIndex || 0;
+    tr.innerHTML =
+      "<td>" + escapeHtml(s.name || "") + "</td>" +
+      "<td><span class=\"stNum\">" + escapeHtml(s.id || "—") + "</span></td>" +
+      "<td>" + getTypeLabel(s.studyType || "") + "</td>" +
+      "<td>" + getStatusBadge(s.status || "") + "</td>" +
+      "<td><button class=\"st-edit-btn\" onclick=\"loadStudentFromList(" + ri + ")\">&#x270F; تعديل</button></td>";
     tbody.appendChild(tr);
   });
-  document.getElementById('stLoading').style.display = 'none';
-  document.getElementById('stTable').style.display = 'table';
-  document.getElementById('stCount').textContent = 'إجمالي الطلاب: ' + data.length;
+  document.getElementById("stLoading").style.display = "none";
+  document.getElementById("stTable").style.display = "table";
+  document.getElementById("stCount").textContent = "إجمالي الطلاب: " + data.length;
 }
 
 function openStats(){
@@ -1455,6 +1539,7 @@ function loadStats(){
     .catch(function(){document.getElementById('statsLoading').innerHTML='❌ فشل الاتصال';});
 }
 function buildStatsUI(s){
+  _lastStats = s;
   var html='';
   html+='<div class="stats-cards">';
   html+='<div class="stats-card"><div class="sc-num">'+s.total+'</div><div class="sc-lbl">إجمالي الطلاب</div></div>';
@@ -1532,6 +1617,100 @@ function buildStatsUI(s){
   document.getElementById('statsContent').innerHTML=html;
   document.getElementById('statsContent').style.display='block';
   document.getElementById('statsSubtitle').textContent='إجمالي الطلاب: '+s.total;
+}
+
+var _lastStats = null;
+function exportStatsCSV(){
+  if(!_lastStats){showToast("لا توجد إحصائيات","error");return;}
+  var s=_lastStats;
+  var HIDDEN=["التخطيط الحضري المهني","التخطيط الحضر"];
+  var csv="\uFEFF";
+  csv+="الإجمالي,ماجستير,دكتوراه,دبلوم عالٍ\n";
+  csv+=s.total+","+(s.master||0)+","+(s.doctor||0)+","+(s.diploma||0)+"\n\n";
+  csv+="القسم,ماجستير ذكر,ماجستير أنثى,مجموع ماجستير,دكتوراه ذكر,دكتوراه أنثى,مجموع دكتوراه,الإجمالي\n";
+  s.depts.forEach(function(d){
+    if(HIDDEN.indexOf(d.dept)!==-1)return;
+    var mT=(d.mm||0)+(d.mf||0),dT=(d.dm||0)+(d.df||0);
+    csv+='"'+(d.dept||"غير محدد")+'",'+( d.mm||0)+","+(d.mf||0)+","+mT+","+(d.dm||0)+","+(d.df||0)+","+dT+","+(mT+dT)+"\n";
+  });
+  if(s.years&&s.years.length){
+    csv+="\nسنة القبول,ماجستير,دكتوراه,دبلوم عالٍ,الإجمالي\n";
+    s.years.forEach(function(y){
+      var t=(y.master||0)+(y.doctor||0)+(y.diploma||0);
+      csv+=y.year+","+(y.master||0)+","+(y.doctor||0)+","+(y.diploma||0)+","+t+"\n";
+    });
+  }
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  a.download="احصائيات_"+new Date().toISOString().slice(0,10)+".csv";
+  a.click();
+  showToast("تم التصدير ✓","success");
+}
+// ============================================================
+// نافذة تأكيد أنيقة
+// ============================================================
+var _cnCallback = null;
+function showConfirmNice(icon, title, msg, callback, type){
+  document.getElementById("cnIcon").textContent = icon;
+  document.getElementById("cnTitle").textContent = title;
+  document.getElementById("cnMsg").textContent   = msg;
+  var okBtn = document.getElementById("cnOkBtn");
+  okBtn.className = "cn-ok" + (type === "danger" ? " danger" : "");
+  _cnCallback = callback;
+  document.getElementById("confirmNiceModal").classList.add("open");
+}
+function cnOkCallback(){
+  var cb = _cnCallback;
+  closeConfirmNice();
+  if(cb) cb();
+}
+function closeConfirmNice(e){
+  if(e && e.target !== document.getElementById("confirmNiceModal")) return;
+  document.getElementById("confirmNiceModal").classList.remove("open");
+  _cnCallback = null;
+}
+
+// ============================================================
+// overlay التحميل
+// ============================================================
+function showLoadingOverlay(txt){
+  var el = document.getElementById("loadingText");
+  if(el) el.textContent = txt || "جارِ التحميل...";
+  document.getElementById("loadingOverlay").classList.add("open");
+}
+function hideLoadingOverlay(){
+  document.getElementById("loadingOverlay").classList.remove("open");
+}
+
+function loadStudentFromList(rowIndex){
+  document.getElementById("stOverlay").classList.remove("open");
+  showLoadingOverlay("جارِ تحميل بيانات الطالب...");
+  var f = new FormData();
+  f.append("action","searchByRow");
+  f.append("token",getToken());
+  f.append("payload",JSON.stringify({rowIndex:rowIndex}));
+  fetch(API_URL,{method:"POST",body:f})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      hideLoadingOverlay();
+      if(d && d.found) doLoadStudent(d);
+      else showToast("تعذر تحميل بيانات الطالب","error");
+    })
+    .catch(function(){ hideLoadingOverlay(); showToast("تعذر الاتصال","error"); });
+}
+
+// إعادة كتابة restoreStudent بدون confirm
+function doRestoreStudent(rowIndex, studentId){
+  showLoadingOverlay("جارِ استعادة الطالب...");
+  fetch(API_URL + "?action=restore&rowIndex=" + rowIndex + "&token=" + encodeURIComponent(getToken()))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      hideLoadingOverlay();
+      if(d.error){showToast("خطأ: "+d.error,"error");return;}
+      showToast("تم استعادة الطالب بنجاح ✓","success");
+      _archiveLoaded=false; _archiveData=[]; loadArchive();
+    })
+    .catch(function(){hideLoadingOverlay();showToast("تعذر الاتصال","error");});
 }
 
 function filterStudents(){
@@ -1734,7 +1913,9 @@ function showUserBadge(username, role) {
 }
 
 function doLogout() {
-  if (!confirm("هل تريد تسجيل الخروج من المنظومة؟")) return;
+  showConfirmNice("🚪","تسجيل الخروج","هل تريد تسجيل الخروج من المنظومة؟",function(){
+    clearSession(); location.reload();
+  },"danger"); return;
   clearSession();
   location.reload();
 }
@@ -1813,7 +1994,9 @@ function filterArchive() {
 }
 
 function restoreStudent(rowIndex, studentId) {
-  if (!confirm("هل تريد استعادة الطالب " + studentId + " من الأرشيف؟")) return;
+  showConfirmNice("🔄","استعادة الطالب","هل تريد استعادة الطالب "+studentId+" من الأرشيف؟",function(){
+    doRestoreStudent(rowIndex,studentId);
+  },"normal"); return;
   fetch(API_URL + "?action=restore&rowIndex=" + rowIndex + "&token=" + encodeURIComponent(getToken()))
     .then(function(r) { return r.json(); })
     .then(function(d) {
