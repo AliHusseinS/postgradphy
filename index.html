@@ -706,7 +706,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbzSbuMsctb8L3VA4ZtVACiguGEJoGzVlSrOzdmFWaikZ6PBGRKTZDnnUBipcxcJnLY-/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwB_crDPYDOq4wMKj3HS82vaclWGIuXNqbrtc40U3rSc1LJUjL63ecNP7hiFkhw1E9r/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -1585,7 +1585,19 @@ function loadLogs() {
     });
 }
 
-function getBadge(op) {
+function formatLogDate(raw) {
+  if (!raw) return "";
+  // إذا كان ISO format حوّله لصيغة مقروءة
+  var s = raw.toString();
+  if (s.indexOf("T") !== -1) {
+    try {
+      var d = new Date(s);
+      var pad = function(n){ return n < 10 ? "0"+n : n; };
+      return d.getFullYear()+"/"+pad(d.getMonth()+1)+"/"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+    } catch(e) { return s; }
+  }
+  return s;
+}
   if (!op) return "log-login";
   if (op.indexOf("اضافة") !== -1 || op.indexOf("إضافة") !== -1) return "log-add";
   if (op.indexOf("تعديل") !== -1) return "log-update";
@@ -1610,7 +1622,7 @@ function renderLogs(data) {
     var badgeClass = getBadge(op);
     tr.innerHTML =
       "<td style='color:#9BB5B0;font-size:.75rem;text-align:center'>" + (i + 1) + "</td>" +
-      "<td style='font-family:monospace;font-size:.78rem;color:#5C7A76;white-space:nowrap'>" + escapeHtml((row[0] || "").toString()) + "</td>" +
+      "<td style='font-family:monospace;font-size:.78rem;color:#5C7A76;white-space:nowrap'>" + escapeHtml(formatLogDate((row[0] || "").toString())) + "</td>" +
       "<td><strong>" + escapeHtml((row[1] || "").toString()) + "</strong></td>" +
       "<td><span class='log-badge " + badgeClass + "'>" + escapeHtml(op) + "</span></td>" +
       "<td style='font-family:monospace;color:#00695C;font-weight:700'>" + escapeHtml((row[3] || "").toString()) + "</td>" +
