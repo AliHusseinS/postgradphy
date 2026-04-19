@@ -343,6 +343,22 @@ header .spacer { flex: 1; }
 .archive-restore-btn:hover{background:#004D40}
 .archive-empty{padding:60px;text-align:center;color:#9BB5B0;font-size:.9rem}
 </style>
+<style>
+#userBadge{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
+  border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;
+  display:flex;align-items:center;gap:8px;direction:rtl;
+}
+#userBadge .ub-name{font-weight:800;font-size:13px}
+#userBadge .ub-role{font-size:10px;opacity:.8;font-weight:400}
+#logoutBtn{
+  background:rgba(220,50,50,.25);border:1px solid rgba(255,100,100,.4);
+  border-radius:50px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  font-family:'Cairo',sans-serif;transition:.2s;
+}
+#logoutBtn:hover{background:rgba(220,50,50,.45)}
+</style>
 </head>
 
 <body>
@@ -410,6 +426,14 @@ header .spacer { flex: 1; }
     </div>
   </div>
 
+  <div id="userBadge" style="display:none">
+    <span>👤</span>
+    <div>
+      <div class="ub-name" id="ubName">—</div>
+      <div class="ub-role" id="ubRole">—</div>
+    </div>
+  </div>
+  <button id="logoutBtn" onclick="doLogout()" style="display:none">🚪 خروج</button>
   <button id="archiveBtn" onclick="openArchive()">🗄️ الأرشيف</button>
   <button id="logsBtn" onclick="openLogs()">📋 سجل العمليات</button>
 
@@ -680,7 +704,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbzSbuMsctb8L3VA4ZtVACiguGEJoGzVlSrOzdmFWaikZ6PBGRKTZDnnUBipcxcJnLY-/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzEcYY6UcZJGMkac8tXOG44VLdS1QvmakqvVek50nDcwQYDs7LWGNh7mhl59V53dS_I/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -743,6 +767,7 @@ function xlogin() {
         setTimeout(function(){ overlay.style.display = 'none'; }, 500);
         showToast('✅ مرحباً ' + d.username, 'success');
         window._userRole = d.role || 'editor';
+        showUserBadge(d.username, d.role || 'editor');
       } else {
         errEl.textContent = "⚠️ " + (d.error || "بيانات غير صحيحة");
         errEl.classList.add('show');
@@ -768,6 +793,8 @@ document.addEventListener('keydown', function(ev) {
   if (getToken()) {
     document.getElementById('xlo').style.display = 'none';
     window._userRole = sessionStorage.getItem('xlRole') || 'editor';
+    var savedUser = sessionStorage.getItem('xlUser') || '';
+    showUserBadge(savedUser, window._userRole);
   }
 })();
 
@@ -1674,6 +1701,27 @@ function doDeleteStudent() {
     .catch(function() { showToast("تعذر الاتصال", "error"); });
 }
 
+
+// ============================================================
+// المستخدم + تسجيل الخروج
+// ============================================================
+function showUserBadge(username, role) {
+  var badge = document.getElementById("userBadge");
+  var nameEl = document.getElementById("ubName");
+  var roleEl = document.getElementById("ubRole");
+  var logoutBtn = document.getElementById("logoutBtn");
+  if (!badge) return;
+  nameEl.textContent = username || "مستخدم";
+  roleEl.textContent = role === "admin" ? "مدير المنظومة" : "اداري - شعبة الدراسات";
+  badge.style.display = "flex";
+  logoutBtn.style.display = "flex";
+}
+
+function doLogout() {
+  if (!confirm("هل تريد تسجيل الخروج من المنظومة؟")) return;
+  clearSession();
+  location.reload();
+}
 
 // ============================================================
 // الأرشيف
