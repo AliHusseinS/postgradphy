@@ -426,6 +426,11 @@ header .spacer { flex: 1; }
     </div>
   </div>
 
+  <button id="archiveBtn" onclick="openArchive()">🗄️ الأرشيف</button>
+  <button id="logsBtn" onclick="openLogs()">📋 سجل العمليات</button>
+
+  <div class="header-badge">🏛️ جامعة الكوفة</div>
+
   <div id="userBadge" style="display:none">
     <span>👤</span>
     <div>
@@ -433,11 +438,7 @@ header .spacer { flex: 1; }
       <div class="ub-role" id="ubRole">—</div>
     </div>
   </div>
-  <button id="logoutBtn" onclick="doLogout()" style="display:none">🚪 خروج</button>
-  <button id="archiveBtn" onclick="openArchive()">🗄️ الأرشيف</button>
-  <button id="logsBtn" onclick="openLogs()">📋 سجل العمليات</button>
-
-  <div id="archiveOverlay" onclick="closeArchive(event)">
+  <button id="logoutBtn" onclick="doLogout()" style="display:none">🚪 خروج</button> onclick="closeArchive(event)">
     <div id="archiveModal">
       <div id="archiveHead">
         <div>
