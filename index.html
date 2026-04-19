@@ -1362,7 +1362,8 @@ var _stData = [];
 
 function openStudents(){
   document.getElementById('stOverlay').classList.add('open');
-  if(_stData.length === 0) loadStudents();
+  _stData = [];
+  loadStudents();
 }
 
 function closeStudents(e){
@@ -1400,7 +1401,8 @@ function renderStudents(data){
 
 function openStats(){
   document.getElementById('statsOverlay').classList.add('open');
-  if(!_statsLoaded) loadStats();
+  _statsLoaded = false;
+  loadStats();
 }
 function closeStats(e){
   if(e.target===document.getElementById('statsOverlay'))
