@@ -276,14 +276,14 @@ header .spacer { flex: 1; }
 #stSearch{padding:12px 20px;border-bottom:1px solid #E0EFED}
 #stSearch input{width:100%;padding:9px 14px;border-radius:10px;border:1.5px solid #D8EDEA;font-family:'Cairo',sans-serif;font-size:.9rem;outline:none;direction:rtl}
 #stSearch input:focus{border-color:#00695C;box-shadow:0 0 0 3px rgba(0,105,92,.1)}
-#stBody{overflow-y:auto;flex:1;padding:0}
+#stBody{overflow-y:auto;overflow-x:hidden;flex:1;padding:0}
 #stTable{width:100%;border-collapse:collapse;direction:rtl}
 #stTable thead tr{background:#F5FAFA;position:sticky;top:0}
 #stTable th{padding:11px 16px;font-size:.8rem;font-weight:800;color:#004D40;border-bottom:2px solid #E0EFED;text-align:right}
-#stTable td{padding:10px 16px;font-size:.85rem;color:#1A2E2B;border-bottom:1px solid #F0F8F7;white-space:nowrap}
+#stTable td{padding:10px 16px;font-size:.85rem;color:#1A2E2B;border-bottom:1px solid #F0F8F7}
 #stTable tbody tr:hover{background:#F5FAFA}
 #stTable td:last-child{color:#00695C;font-weight:700;font-family:monospace;font-size:.82rem}
-#stFoot{padding:12px 20px;border-top:1px solid #E0EFED;text-align:center;font-size:.75rem;color:#9BB5B0}
+#stFoot{display:none}
 #stLoading{padding:40px;text-align:center;color:#5C7A76}
 .stNum{background:#E8F5E9;color:#2E7D32;padding:2px 8px;border-radius:6px;font-size:.78rem;white-space:nowrap;display:inline-block}
 </style>
@@ -388,6 +388,90 @@ header .spacer { flex: 1; }
 .cn-cancel{background:#fff;color:#5C7A76;border:1.5px solid #E0EFED;padding:10px 22px;border-radius:50px;font-family:Cairo,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer}
 .cn-cancel:hover{border-color:#00695C;color:#00695C}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+.stats-charts-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.stats-chart-box{background:#fff;border-radius:14px;border:1.5px solid #E0EFED;padding:18px;box-shadow:0 2px 8px rgba(0,77,64,.06)}
+.stats-chart-box-title{font-size:.85rem;font-weight:700;color:#004D40;margin-bottom:14px;text-align:center}
+.stats-canvas-wrap{position:relative;height:220px}
+.stats-year-bar-wrap{margin-bottom:20px;background:#fff;border-radius:14px;border:1.5px solid #E0EFED;padding:18px;box-shadow:0 2px 8px rgba(0,77,64,.06)}
+@media(max-width:600px){.stats-charts-row{grid-template-columns:1fr}}
+</style>
+<style>
+.db-wrap{padding:0;direction:rtl}
+.db-hdr{background:#004D40;padding:20px 24px;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between}
+.db-hdr-left{display:flex;align-items:center;gap:14px}
+.db-avatar{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:500;border:1.5px solid rgba(255,255,255,.25)}
+.db-uname{font-size:16px;font-weight:500;color:#fff}
+.db-udate{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.db-hdr-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 18px;border-radius:8px;font-size:13px;cursor:pointer;font-family:Cairo,sans-serif}
+.db-hdr-btn:hover{background:rgba(255,255,255,.25)}
+.db-body{background:#F5FAFA;padding:20px;border-radius:0 0 20px 20px}
+.db-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.db-panel{background:#fff;border:0.5px solid #E0EFED;border-radius:14px;padding:16px 18px}
+.db-panel-title{font-size:11px;font-weight:500;color:#5C7A76;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.db-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.db-dot-g{background:#1D9E75}.db-dot-r{background:#E24B4A}.db-dot-a{background:#EF9F27}.db-dot-y{background:#F9A825}
+.db-today-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid #E0EFED}
+.db-today-row:last-child{border-bottom:none}
+.db-today-lbl{font-size:13px;color:#5C7A76}
+.db-today-val{font-size:20px;font-weight:500}
+.db-today-val.g{color:#1D9E75}.db-today-val.b{color:#378ADD}.db-today-val.p{color:#7F77DD}
+.db-alerts-panel{background:#fff;border:0.5px solid #E0EFED;border-radius:14px;overflow:hidden}
+.db-alerts-title{font-size:11px;font-weight:500;color:#5C7A76;letter-spacing:.06em;text-transform:uppercase;padding:14px 16px 10px;display:flex;align-items:center;gap:6px;border-bottom:0.5px solid #F0F8F7}
+.db-alert-row{border-bottom:0.5px solid #F0F8F7}
+.db-alert-row:last-child{border-bottom:none}
+.db-alert-trigger{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;transition:background .15s;border:none;width:100%;text-align:right;font-family:Cairo,sans-serif;background:transparent}
+.db-alert-trigger:hover{background:#FAFAFA}
+.db-alert-lbl{font-size:13px;font-weight:500;color:#1A2E2B}
+.db-alert-right{display:flex;align-items:center;gap:8px}
+.db-alert-num-val{font-size:20px;font-weight:500}
+.num-red{color:#A32D2D}.num-org{color:#854F0B}.num-blu{color:#185FA5}.num-ylw{color:#F57F17}
+.db-alert-chev{font-size:11px;color:#9BB5B0;transition:transform .25s;display:inline-block;width:14px}
+.db-alert-chev.open{transform:rotate(180deg)}
+.db-alert-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.db-alert-body.open{max-height:500px}
+.db-alert-search{padding:8px 14px;border-top:0.5px solid #F0F8F7;border-bottom:0.5px solid #F0F8F7;background:#FAFCFC}
+.db-alert-search input{width:100%;padding:6px 10px;border:0.5px solid #D8EDEA;border-radius:8px;font-size:12px;background:#fff;color:#1A2E2B;font-family:Cairo,sans-serif;outline:none}
+.db-alert-list{max-height:200px;overflow-y:auto;background:#fff}
+.db-alert-list::-webkit-scrollbar{width:3px}
+.db-alert-list::-webkit-scrollbar-thumb{background:#D8EDEA;border-radius:4px}
+.db-al-row{display:flex;align-items:center;gap:8px;padding:7px 16px;border-bottom:0.5px solid #F5FAFA;direction:rtl}
+.db-al-row:last-child{border-bottom:none}
+.db-al-row:hover{background:#F9FAFB}
+.db-al-n{font-size:10px;color:#C0C0C0;width:16px;text-align:center;flex-shrink:0}
+.db-al-id{font-family:monospace;font-size:11px;flex-shrink:0;padding:1px 6px;border-radius:9999px}
+.id-red{background:#FFEBEE;color:#B71C1C}.id-org{background:#FFF3E0;color:#E65100}
+.id-blu{background:#E3F2FD;color:#1565C0}.id-ylw{background:#FFFDE7;color:#F57F17}
+.db-al-name{font-size:12px;color:#1A2E2B;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.db-al-days{font-size:10px;padding:1px 6px;border-radius:9999px;white-space:nowrap;flex-shrink:0}
+.days-red{background:#FFEBEE;color:#B71C1C}.days-org{background:#FFF3E0;color:#E65100}
+.days-blu{background:#E3F2FD;color:#1565C0}.days-ylw{background:#FFFDE7;color:#F57F17}
+.db-al-foot{padding:5px 16px;font-size:10px;color:#9BB5B0;text-align:center;background:#F9FAFB;border-top:0.5px solid #F0F8F7}
+.db-ops-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid #E0EFED}
+.db-ops-item:last-child{border-bottom:none}
+.db-op-badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:9999px;white-space:nowrap;flex-shrink:0}
+.dob-add{background:#EAF3DE;color:#3B6D11}.dob-edit{background:#FAEEDA;color:#854F0B}
+.dob-exp{background:#E6F1FB;color:#185FA5}.dob-arch{background:#EEEDFE;color:#534AB7}.dob-oth{background:#F5F5F5;color:#757575}
+.db-op-info{flex:1;min-width:0}
+.db-op-name{font-size:12px;color:#1A2E2B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-op-id{font-size:11px;color:#1D9E75;font-family:monospace}
+.db-op-meta{font-size:11px;color:#9BB5B0;white-space:nowrap;flex-shrink:0}
+.db-nostart-acc{background:#fff;border:0.5px solid #FAC775;border-radius:14px;margin-top:14px;overflow:hidden}
+.db-nostart-trigger{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;background:#FFFDE7;border:none;width:100%;text-align:right;font-family:Cairo,sans-serif}
+.db-nostart-trigger:hover{background:#FFF9C4}
+.db-nostart-left{display:flex;align-items:center;gap:8px}
+.db-nostart-title{font-size:13px;font-weight:500;color:#F57F17}
+.db-nostart-count{font-size:11px;background:#FFF3E0;color:#E65100;padding:2px 8px;border-radius:9999px;font-weight:500}
+.db-nostart-chev{font-size:11px;color:#9BB5B0;transition:transform .25s;display:inline-block}
+.db-nostart-chev.open{transform:rotate(180deg)}
+.db-nostart-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.db-nostart-body.open{max-height:500px}
+.db-enter-btn{width:100%;margin-top:14px;padding:11px;background:#004D40;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:Cairo,sans-serif}
+.db-enter-btn:hover{background:#0F6E56}
+#dashOverlay{position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center}
+#dashOverlay.open{display:flex}
+#dashModal{background:#fff;border-radius:20px;width:860px;max-width:97vw;max-height:94vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.35);animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}</style>
 </head>
 
 <body>
@@ -429,6 +513,10 @@ header .spacer { flex: 1; }
   </div>
   <div class="spacer"></div>
 
+  <button id="dashBtn" onclick="openDash(true)" title="لوحة التحكم" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0" id="dashBellBtn">
+    🔔
+    <span id="dashBellBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#E53935;color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:700;align-items:center;justify-content:center;font-family:Cairo,sans-serif"></span>
+  </button>
   <button id="stBtn" onclick="openStudents()">👥 قائمة الطلاب</button>
   <button id="statsBtn" onclick="openStats()">📊 الإحصائيات</button>
 
@@ -452,7 +540,7 @@ header .spacer { flex: 1; }
           <tbody id="stTbody"></tbody>
         </table>
       </div>
-      <div id="stFoot">كلية التخطيط العمراني — جامعة الكوفة</div>
+
     </div>
   </div>
 
@@ -578,6 +666,88 @@ header .spacer { flex: 1; }
       <div class="cn-actions">
         <button class="cn-ok" id="cnOkBtn" onclick="cnOkCallback()">تأكيد</button>
         <button class="cn-cancel" onclick="closeConfirmNice()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+  <div id="dashOverlay" onclick="closeDashOutside(event)">
+    <div id="dashModal">
+      <div class="db-wrap">
+        <div class="db-hdr">
+          <div class="db-hdr-left">
+            <div class="db-avatar" id="dbAvatar">A</div>
+            <div>
+              <div class="db-uname" id="dbUname">مرحباً</div>
+              <div class="db-udate" id="dbDate"></div>
+            </div>
+          </div>
+          <button class="db-hdr-btn" onclick="closeDash()">دخول إلى المنظومة ←</button>
+        </div>
+        <div class="db-body">
+          <div class="db-grid">
+            <div class="db-panel">
+              <div class="db-panel-title"><div class="db-dot db-dot-g"></div>نشاط اليوم</div>
+              <div class="db-today-row"><span class="db-today-lbl">إضافة طالب</span><span class="db-today-val g" id="dcAdded">—</span></div>
+              <div class="db-today-row"><span class="db-today-lbl">تعديل بيانات</span><span class="db-today-val b" id="dcEdited">—</span></div>
+              <div class="db-today-row"><span class="db-today-lbl">تصدير ملفات</span><span class="db-today-val p" id="dcExported">—</span></div>
+            </div>
+            <div class="db-alerts-panel">
+              <div class="db-alerts-title"><div class="db-dot db-dot-r"></div>تنبيهات مدة الدراسة</div>
+              <div class="db-alert-row">
+                <button class="db-alert-trigger" onclick="toggleDbAlert('expired')">
+                  <div class="db-alert-left" style="display:flex;align-items:center;gap:8px"><span>🔴</span><span class="db-alert-lbl">منتهية المدة</span></div>
+                  <div class="db-alert-right"><span class="db-alert-num-val num-red" id="daexpired">—</span><span class="db-alert-chev" id="chevexpired">&#8964;</span></div>
+                </button>
+                <div class="db-alert-body" id="bodyexpired">
+                  <div class="db-alert-search"><input type="text" placeholder="ابحث بالاسم أو الرقم..." oninput="filterDbAl('expired',this.value)" dir="rtl"></div>
+                  <div class="db-alert-list" id="listexpired"></div>
+                  <div class="db-al-foot" id="footexpired"></div>
+                </div>
+              </div>
+              <div class="db-alert-row">
+                <button class="db-alert-trigger" onclick="toggleDbAlert('30')">
+                  <div class="db-alert-left" style="display:flex;align-items:center;gap:8px"><span>🟠</span><span class="db-alert-lbl">أقل من 30 يوم</span></div>
+                  <div class="db-alert-right"><span class="db-alert-num-val num-org" id="da30">—</span><span class="db-alert-chev" id="chev30">&#8964;</span></div>
+                </button>
+                <div class="db-alert-body" id="body30">
+                  <div class="db-alert-search"><input type="text" placeholder="ابحث بالاسم أو الرقم..." oninput="filterDbAl('30',this.value)" dir="rtl"></div>
+                  <div class="db-alert-list" id="list30"></div>
+                  <div class="db-al-foot" id="foot30"></div>
+                </div>
+              </div>
+              <div class="db-alert-row">
+                <button class="db-alert-trigger" onclick="toggleDbAlert('90')">
+                  <div class="db-alert-left" style="display:flex;align-items:center;gap:8px"><span>🟡</span><span class="db-alert-lbl">أقل من 90 يوم</span></div>
+                  <div class="db-alert-right"><span class="db-alert-num-val num-ylw" id="da90">—</span><span class="db-alert-chev" id="chev90">&#8964;</span></div>
+                </button>
+                <div class="db-alert-body" id="body90">
+                  <div class="db-alert-search"><input type="text" placeholder="ابحث بالاسم أو الرقم..." oninput="filterDbAl('90',this.value)" dir="rtl"></div>
+                  <div class="db-alert-list" id="list90"></div>
+                  <div class="db-al-foot" id="foot90"></div>
+                </div>
+              </div>
+            </div>
+            <div class="db-panel" style="grid-column:1/-1">
+              <div class="db-panel-title"><div class="db-dot db-dot-a"></div>آخر العمليات</div>
+              <div id="dbOps"><div style="padding:10px;text-align:center;color:#9BB5B0;font-size:13px">⏳ جارِ التحميل...</div></div>
+            </div>
+          </div>
+          <div class="db-nostart-acc" id="dbNoStartAcc" style="display:none">
+            <button class="db-nostart-trigger" onclick="toggleDbNoStart()">
+              <div class="db-nostart-left">
+                <span style="font-size:15px">&#9888;</span>
+                <span class="db-nostart-title">طلاب لم يُسجَّل تاريخ مباشرتهم</span>
+                <span class="db-nostart-count" id="dbNoStartCount">0</span>
+              </div>
+              <span class="db-nostart-chev" id="dbNoStartChev">&#8964;</span>
+            </button>
+            <div class="db-nostart-body" id="dbNoStartBody">
+              <div class="db-alert-search"><input type="text" placeholder="ابحث بالاسم أو الرقم..." oninput="filterDbNoStart(this.value)" dir="rtl"></div>
+              <div class="db-alert-list" id="dbNoStartList"></div>
+              <div class="db-al-foot" id="dbNoStartFoot"></div>
+            </div>
+          </div>
+          <button class="db-enter-btn" onclick="closeDash()">دخول إلى المنظومة ←</button>
+        </div>
       </div>
     </div>
   </div>
@@ -759,7 +929,7 @@ header .spacer { flex: 1; }
 // ============================================================
 // إعدادات API
 // ============================================================
-const API_URL = "https://script.google.com/macros/s/AKfycbwRziYuEYx5s65IMzljvi9FkngZiUkVlincQNDJiLeuKD4ZuMcNZhC9wVg7GtbhkVP8/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzqLt9_0ZnCuFIF_iLrODMYGFI-zz1wc-AwGnLCWYy1gxkEg2tUcAWMCHRXMkWJ3GBc/exec";
 
 let MODE = "ADD";
 let currentRowIndex = null;
@@ -821,6 +991,7 @@ function xlogin() {
         overlay.style.opacity = '0';
         setTimeout(function(){ overlay.style.display = 'none'; }, 500);
         showToast('✅ مرحباً ' + d.username, 'success');
+        setTimeout(openDash, 600);
         window._userRole = d.role || 'editor';
         showUserBadge(d.username, d.role || 'editor');
       } else {
@@ -850,6 +1021,7 @@ document.addEventListener('keydown', function(ev) {
     window._userRole = sessionStorage.getItem('xlRole') || 'editor';
     var savedUser = sessionStorage.getItem('xlUser') || '';
     showUserBadge(savedUser, window._userRole);
+    setTimeout(openDash, 800);
   }
 })();
 
@@ -1613,10 +1785,93 @@ function buildStatsUI(s){
     html+='</div>';
   }
 
+  // ===== الرسوم البيانية =====
+  html += '<div class="stats-charts-row">';
+
+  // رسم دائري 1: نوع الدراسة
+  html += '<div class="stats-chart-box">';
+  html += '<div class="stats-chart-box-title">📊 توزيع نوع الدراسة</div>';
+  html += '<div class="stats-canvas-wrap"><canvas id="chartType"></canvas></div>';
+  html += '</div>';
+
+  // رسم دائري 2: الحالات
+  html += '<div class="stats-chart-box">';
+  html += '<div class="stats-chart-box-title">📋 توزيع حالات الطلاب</div>';
+  html += '<div class="stats-canvas-wrap"><canvas id="chartStatus"></canvas></div>';
+  html += '</div>';
+  html += '</div>';
+
+  // رسم شريطي: مقارنة سنوية
+  if(s.years && s.years.length > 0){
+    html += '<div class="stats-year-bar-wrap">';
+    html += '<div class="stats-chart-box-title">📈 مقارنة سنوية لأعداد الطلاب</div>';
+    html += '<div style="position:relative;height:260px"><canvas id="chartYears"></canvas></div>';
+    html += '</div>';
+  }
+
   document.getElementById('statsLoading').style.display='none';
   document.getElementById('statsContent').innerHTML=html;
   document.getElementById('statsContent').style.display='block';
   document.getElementById('statsSubtitle').textContent='إجمالي الطلاب: '+s.total;
+
+  // رسم الشارتات بعد إدراج HTML
+  setTimeout(function(){
+    // 1: نوع الدراسة
+    var ctxType = document.getElementById('chartType');
+    if(ctxType){
+      new Chart(ctxType, {
+        type: 'doughnut',
+        data: {
+          labels: ['ماجستير','دكتوراه','دبلوم عالٍ'],
+          datasets:[{ data:[s.master||0, s.doctor||0, s.diploma||0],
+            backgroundColor:['#1565C0','#B71C1C','#6A1B9A'],
+            borderWidth:2, borderColor:'#fff' }]
+        },
+        options:{ responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ position:'bottom', labels:{ font:{family:'Cairo',size:11}, padding:10 }}}}
+      });
+    }
+
+    // 2: الحالات
+    var ctxStatus = document.getElementById('chartStatus');
+    if(ctxStatus && s.statusCount){
+      new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: ['متخرج','مستمر','مرقّن','مؤجل'],
+          datasets:[{ data:[s.statusCount.grad||0, s.statusCount.active||0, s.statusCount.cxl||0, s.statusCount.delay||0],
+            backgroundColor:['#2E7D32','#1565C0','#B71C1C','#E65100'],
+            borderWidth:2, borderColor:'#fff' }]
+        },
+        options:{ responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ position:'bottom', labels:{ font:{family:'Cairo',size:11}, padding:10 }}}}
+      });
+    }
+
+    // 3: مقارنة سنوية
+    var ctxYears = document.getElementById('chartYears');
+    if(ctxYears && s.years && s.years.length > 0){
+      var labels = s.years.map(function(y){ return y.year; });
+      new Chart(ctxYears, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets:[
+            { label:'ماجستير', data: s.years.map(function(y){return y.master||0;}),
+              backgroundColor:'rgba(21,101,192,.8)', borderRadius:4 },
+            { label:'دكتوراه', data: s.years.map(function(y){return y.doctor||0;}),
+              backgroundColor:'rgba(183,28,28,.8)', borderRadius:4 },
+            { label:'دبلوم عالٍ', data: s.years.map(function(y){return y.diploma||0;}),
+              backgroundColor:'rgba(106,27,154,.8)', borderRadius:4 }
+          ]
+        },
+        options:{ responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ position:'top', labels:{ font:{family:'Cairo',size:11} }}},
+          scales:{ x:{ ticks:{ font:{family:'Cairo',size:10} }},
+                   y:{ beginAtZero:true, ticks:{ font:{family:'Cairo',size:10}, stepSize:1 }}}}
+      });
+    }
+  }, 50);
 }
 
 var _lastStats = null;
@@ -1712,6 +1967,140 @@ function doRestoreStudent(rowIndex, studentId){
     })
     .catch(function(){hideLoadingOverlay();showToast("تعذر الاتصال","error");});
 }
+
+// ============================================================
+// Dashboard
+// ============================================================
+var _dashData = null;
+var _dbAlState = {expired:false,"30":false,"90":false};
+var _dbAlData  = {expired:[],"30":[],"90":[]};
+var _dbNsData  = [];
+var _dbNsOpen  = false;
+
+function getDayNameAr(){
+  var d=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  return d[new Date().getDay()];
+}
+function getDbOpBadge(op){
+  if(op.indexOf("إضافة")!==-1) return "<span class=\"db-op-badge dob-add\">إضافة</span>";
+  if(op.indexOf("تعديل")!==-1) return "<span class=\"db-op-badge dob-edit\">تعديل</span>";
+  if(op.indexOf("تصدير")!==-1) return "<span class=\"db-op-badge dob-exp\">تصدير</span>";
+  if(op.indexOf("أرشف")!==-1||op.indexOf("استعادة")!==-1) return "<span class=\"db-op-badge dob-arch\">أرشيف</span>";
+  return "<span class=\"db-op-badge dob-oth\">"+escapeHtml(op)+"</span>";
+}
+function openDash(force){
+  if(!force && sessionStorage.getItem("dashShown")) return;
+  document.getElementById("dashOverlay").classList.add("open");
+  loadDash();
+}
+function closeDash(){
+  document.getElementById("dashOverlay").classList.remove("open");
+  sessionStorage.setItem("dashShown","1");
+}
+function closeDashOutside(e){
+  if(e.target===document.getElementById("dashOverlay")) closeDash();
+}
+function toggleDbAlert(type){
+  var open = !_dbAlState[type];
+  _dbAlState[type] = open;
+  document.getElementById("body"+type).classList.toggle("open", open);
+  document.getElementById("chev"+type).classList.toggle("open", open);
+  if(open) renderDbAl(type, _dbAlData[type]);
+}
+function clrClass(type){ return type==="expired"?"red":type==="30"?"org":type==="90"?"ylw":"blu"; }
+function renderDbAl(type, data){
+  var clr = clrClass(type);
+  var h="";
+  data.forEach(function(s,i){
+    var dl = s.days<0?"منذ "+Math.abs(s.days)+" يوم":"متبقي "+s.days+" يوم";
+    h+="<div class=\"db-al-row\">"+
+      "<span class=\"db-al-n\">"+(i+1)+"</span>"+
+      "<span class=\"db-al-id id-"+clr+"\">"+escapeHtml(s.id||"")+"</span>"+
+      "<span class=\"db-al-name\">"+escapeHtml(s.name||"")+"</span>"+
+      "<span class=\"db-al-days days-"+clr+"\">"+dl+"</span>"+
+    "</div>";
+  });
+  document.getElementById("list"+type).innerHTML = h||"<div style=\"padding:10px;text-align:center;font-size:12px;color:#9BB5B0\">لا توجد بيانات</div>";
+  document.getElementById("foot"+type).textContent = "إجمالي: "+data.length+" طالب";
+}
+function filterDbAl(type, q){
+  q=(q||"").trim().toLowerCase();
+  var filtered=q?_dbAlData[type].filter(function(s){
+    return (s.name||"").toLowerCase().indexOf(q)!==-1||(s.id||"").indexOf(q)!==-1;
+  }):_dbAlData[type];
+  renderDbAl(type, filtered);
+}
+function toggleDbNoStart(){
+  _dbNsOpen=!_dbNsOpen;
+  document.getElementById("dbNoStartBody").classList.toggle("open",_dbNsOpen);
+  document.getElementById("dbNoStartChev").classList.toggle("open",_dbNsOpen);
+  if(_dbNsOpen) renderDbNs(_dbNsData);
+}
+function renderDbNs(data){
+  var h="";
+  data.forEach(function(s,i){
+    h+="<div class=\"db-al-row\">"+
+      "<span class=\"db-al-n\">"+(i+1)+"</span>"+
+      "<span class=\"db-al-id id-ylw\">"+escapeHtml(s.id||"")+"</span>"+
+      "<span class=\"db-al-name\">"+escapeHtml(s.name||"")+"</span>"+
+    "</div>";
+  });
+  document.getElementById("dbNoStartList").innerHTML=h||"<div style=\"padding:10px;text-align:center;font-size:12px;color:#9BB5B0\">لا توجد بيانات</div>";
+  document.getElementById("dbNoStartFoot").textContent="إجمالي: "+data.length+" طالب";
+}
+function filterDbNoStart(q){
+  q=(q||"").trim().toLowerCase();
+  var filtered=q?_dbNsData.filter(function(s){
+    return (s.name||"").toLowerCase().indexOf(q)!==-1||(s.id||"").indexOf(q)!==-1;
+  }):_dbNsData;
+  renderDbNs(filtered);
+}
+function loadDash(){
+  var now=new Date(),pad=function(n){return n<10?"0"+n:n;};
+  var user=sessionStorage.getItem("xlUser")||"مستخدم";
+  var role=window._userRole==="admin"?"مدير المنظومة":"اداري - شعبة الدراسات";
+  document.getElementById("dbUname").textContent="مرحباً "+user+" — "+role;
+  document.getElementById("dbDate").textContent=getDayNameAr()+" "+now.getFullYear()+"/"+pad(now.getMonth()+1)+"/"+pad(now.getDate());
+  document.getElementById("dbAvatar").textContent=user.charAt(0).toUpperCase();
+  fetch(API_URL+"?action=getDashboard&token="+encodeURIComponent(getToken()))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.dashboard) return;
+      _dashData=d.dashboard;
+      var db=_dashData;
+      document.getElementById("dcAdded").textContent=db.today.added||"0";
+      document.getElementById("dcEdited").textContent=db.today.edited||"0";
+      document.getElementById("dcExported").textContent=db.today.exported||"0";
+      document.getElementById("daexpired").textContent=db.alerts.expired||"0";
+      document.getElementById("da30").textContent=db.alerts.expiring30||"0";
+      document.getElementById("da90").textContent=db.alerts.expiring90||"0";
+      _dbAlData["expired"]=db.expiredList||[];
+      _dbAlData["30"]=db.expiring30List||[];
+      _dbAlData["90"]=db.expiring90List||[];
+      var total=(db.alerts.expired||0)+(db.alerts.expiring30||0);
+      var badge=document.getElementById("dashBellBadge");
+      if(badge&&total>0){badge.textContent=total>9?"9+":total;badge.style.display="flex";}
+      var opsHtml="";
+      if(db.lastOps&&db.lastOps.length){
+        db.lastOps.forEach(function(op){
+          opsHtml+="<div class=\"db-ops-item\">"+getDbOpBadge(op.op)+
+            "<div class=\"db-op-info\"><div class=\"db-op-name\">"+escapeHtml(op.name||"—")+"</div>"+
+            "<div class=\"db-op-id\">"+escapeHtml(op.id||"")+"</div></div>"+
+            "<div class=\"db-op-meta\">"+escapeHtml((op.date||"").toString().slice(0,16))+" — "+escapeHtml(op.user||"")+"</div></div>";
+        });
+      } else { opsHtml="<div style=\"padding:12px;text-align:center;color:#9BB5B0;font-size:13px\">لا توجد عمليات بعد</div>"; }
+      document.getElementById("dbOps").innerHTML=opsHtml;
+      if(db.alerts.noStart>0){
+        _dbNsData=db.noStartList||[];
+        document.getElementById("dbNoStartAcc").style.display="block";
+        document.getElementById("dbNoStartCount").textContent=db.alerts.noStart+" طالب";
+      }
+    })
+    .catch(function(){
+      document.getElementById("dbOps").innerHTML="<div style=\"padding:12px;text-align:center;color:#E53935;font-size:13px\">❌ تعذر تحميل البيانات</div>";
+    });
+}
+
 
 function filterStudents(){
   var q = document.getElementById('stSearchInput').value.trim().toLowerCase();
@@ -1913,6 +2302,7 @@ function showUserBadge(username, role) {
 }
 
 function doLogout() {
+  sessionStorage.removeItem("dashShown");
   showConfirmNice("🚪","تسجيل الخروج","هل تريد تسجيل الخروج من المنظومة؟",function(){
     clearSession(); location.reload();
   },"danger"); return;
